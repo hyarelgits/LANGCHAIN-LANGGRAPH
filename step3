@@ -1,0 +1,152 @@
+Next Phase: Query the Knowledge Base
+
+Currently your AI has stored knowledge.
+
+Now we need to retrieve knowledge.
+
+Think:
+
+Plain Text
+Student studies book
+↓
+Stores knowledge in brain
+↓
+Teacher asks question
+↓
+Student answers
+
+Your project is at:
+
+Plain Text
+Stores knowledge in brain ✅
+
+Next:
+
+Plain Text
+Ask question → Get answer
+Step 1: Check Files
+
+Run:
+
+Shell
+ls chroma_db_code
+
+You might see:
+
+Plain Text
+__init__.py
+ingest.py
+query.py
+Step 2: If query.py Exists
+
+Open it:
+
+Shell
+nano chroma_db_code/query.py
+
+or
+
+Shell
+cat chroma_db_code/query.py
+
+Send me the contents.
+
+Step 3: Backend Understanding
+
+You have already built:
+
+Plain Text
+Loan Documents
+│
+▼
+Embeddings
+│
+▼
+ChromaDB
+
+Now we add:
+
+Plain Text
+User Question
+│
+▼
+Embedding
+│
+▼
+Search ChromaDB
+│
+▼
+Best Matching Chunk
+│
+▼
+Llama3.2
+│
+▼
+Answer
+Visual Workflow
+Plain Text
+┌─────────────────────┐
+│ Loan Documents │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Ingest.py │
+│ Read Documents │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Create Embeddings │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ ChromaDB Storage │
+└──────────┬──────────┘
+│
+▼
+(Done ✅)
+ 
+│
+▼
+ 
+┌─────────────────────┐
+│ User Question │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Query.py │
+│ Search ChromaDB │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Relevant Context │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Llama3.2 │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Final Answer │
+└─────────────────────┘
+Your Immediate Next Command
+
+Run:
+
+Shell
+ls chroma_db_code
+
+Then:
+
+Shell
+cat chroma_db_code/query.py
+
+Paste the output here.
+
+Then I'll explain every line of query.py like a kid's story, just as we did for ingest.py, and we'll make your Loan Assistant answer questions from the documents. 🚀
