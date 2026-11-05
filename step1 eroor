@@ -15,7 +15,42 @@ Install the package:
 Shell
 pip install -U langchain-ollama
 
-Then:
+
+----------------
+
+Open the file:
+
+Shell
+nano /root/my-loan-project/chroma_db_code/ingest.py
+
+or
+
+Shell
+vi /root/my-loan-project/chroma_db_code/ingest.py
+
+Then make sure the imports are:
+
+Python
+from langchain_ollama import OllamaEmbeddings
+
+instead of:
+
+Python
+from langchain_community.embeddings import OllamaEmbeddings
+
+Also install the package:
+
+Shell
+pip install -U langchain-ollama
+
+If you want me to tell you the exact line number and exact code changes, please paste the contents of:
+
+Plain Text
+chroma_db_code/ingest.py
+
+or upload a screenshot of that file.
+
+Then:=======================================
 
 Python
 embeddings = OllamaEmbeddings(
@@ -81,3 +116,7 @@ tail -50 error.log
 or upload the full terminal output.
 
 The screenshot cuts off the most important part, which is the exception shown after main() on line 22, so I need those last lines to identify the exact failure.
+
+
+
+===================
