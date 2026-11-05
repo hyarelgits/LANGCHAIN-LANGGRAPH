@@ -1,0 +1,1512 @@
+Perfect. You've finished the core AI parts up to:
+
+Plain Text
+Phase 1 Documents ✅
+Phase 2 ChromaDB + Embeddings ✅
+Phase 3 LangChain + Ollama ✅
+Phase 4 LangGraph ✅
+Next Step: Phase 5 FastAPI
+Why FastAPI?
+
+Right now you run:
+
+Shell
+python -m chroma_db_code.query_llm
+
+and type questions in the terminal.
+
+A real application works like:
+
+Plain Text
+Browser
+│
+▼
+FastAPI
+│
+▼
+LangGraph
+│
+▼
+RAG
+│
+▼
+Ollama
+│
+▼
+Answer
+
+FastAPI allows:
+
+Web UI
+Mobile Apps
+REST APIs
+Swagger Documentation
+Install FastAPI
+Shell
+pip install fastapi uvicorn
+
+Check:
+
+Shell
+pip show fastapi
+pip show uvicorn
+Create main.py
+
+Create:
+
+nano app.py
+
+
+from fastapi import FastAPI
+from langchain_ollama import ChatOllama
+
+app = FastAPI()
+
+llm = ChatOllama(
+    model="llama3.2:1b"
+)
+
+@app.get("/")
+def home():
+    return {"message": "Loan AI Assistant Running"}
+
+@app.get("/ask")
+def ask(question: str):
+
+    response = llm.invoke(question)
+
+    return {
+        "question": question,
+        "answer": response.content
+    }
+
+=============
+
+
+Upgrade
+
+
+i need to use RAG ,LANGGRAPH,LANGCHAIN,MCP,FASTAPI
+Yes. In fact, a modern AI application should use these technologies together because each solves a different problem.
+
+What Each Technology Does
+Technology	Purpose	Think Like
+RAG	Finds information from documents	Librarian
+LangChain	Connects components together	Electric wiring
+LangGraph	Controls decision-making flow	Traffic police
+MCP	Connects AI to external tools	USB port
+FastAPI	Exposes APIs for UI and applications	Reception desk
+Recommended Architecture for Your Loan Assistant
+
+
+                    USER
+                      │
+                      ▼
+              ┌─────────────┐
+              │  FastAPI    │
+              └──────┬──────┘
+                     │
+                     ▼
+              ┌─────────────┐
+              │ LangGraph   │
+              │ Orchestrator│
+              └──────┬──────┘
+                     │
+     ┌───────────────┼────────────────┐
+     │               │                │
+     ▼               ▼                ▼
+ 
+  RAG Search     MCP Tools      Business Rules
+ (ChromaDB)     (Postgres,      (Eligibility,
+                GitHub, etc.)    Validation)
+ 
+     │
+     ▼
+  LangChain
+     │
+     ▼
+   Ollama
+  (Llama 3.2)
+     │
+     ▼
+   Answer
+How a Loan Question Flows
+Customer asks:
+
+
+
+Can customer Ravi get a loan?
+CIBIL = 760
+Income = 50,000
+Step 1 FastAPI
+Receives request:
+
+
+
+POST /ask
+Step 2 LangGraph
+Decides:
+
+
+
+Need policy?
+YES
+ 
+Need customer data?
+YES
+ 
+Need calculation?
+YES
+Step 3 RAG
+Searches ChromaDB
+
+Finds:
+
+
+
+Minimum CIBIL Score = 750
+Step 4 MCP
+Calls:
+
+
+
+PostgreSQL
+Customer Database
+Gets:
+
+
+
+Customer CIBIL = 760
+Step 5 LangChain
+Creates prompt:
+
+
+
+Policy:
+Minimum score is 750
+ 
+Customer:
+Score is 760
+ 
+Question:
+Eligible?
+Step 6 Ollama
+Generates:
+
+
+
+Customer is eligible because
+CIBIL score exceeds minimum requirement.
+Project Structure
+
+
+loan-ai-assistant/
+ 
+│
+├── app/
+│   ├── main.py
+│   ├── routes/
+│   ├── graph/
+│   ├── rag/
+│   ├── tools/
+│   └── models/
+│
+├── chroma_db_storage/
+│
+├── documents/
+│   ├── loan_policy.txt
+│   └── cibil_rules.txt
+│
+├── chroma_db_code/
+│   ├── ingest.py
+│   └── query.py
+│
+├── requirements.txt
+│
+└── docker-compose.yml
+Learning Order
+Since you've already completed ingestion, follow this order:
+
+Phase 1 ✅
+
+
+Ollama
+Embeddings
+ChromaDB
+Ingestion
+Completed.
+
+Phase 2
+Build query system
+
+
+
+question
+↓
+Chroma Search
+↓
+return chunks
+Files:
+
+
+
+query.py
+Phase 3
+Add LangChain
+
+
+
+Question
+↓
+Retrieve Chunks
+↓
+Prompt Template
+↓
+LLM
+↓
+Answer
+Phase 4
+Add LangGraph
+
+Create nodes:
+
+
+
+START
+ 
+ ↓
+ 
+Retrieve Node
+ 
+ ↓
+ 
+Decision Node
+ 
+ ↓
+ 
+Tool Node
+ 
+ ↓
+ 
+Answer Node
+ 
+ ↓
+ 
+END
+Phase 5
+Add MCP
+
+Connect:
+
+
+
+PostgreSQL
+GitHub
+Jira
+Email
+Redis
+Example:
+
+
+
+Loan Policy Search
+Customer Record Lookup
+Phase 6
+Add FastAPI
+
+Endpoints:
+
+
+
+POST /ask
+ 
+POST /ingest
+ 
+GET /health
+ 
+GET /docs
+Start:
+
+
+
+uvicorn app.main:app --reload
+Swagger:
+
+
+
+http://localhost:8000/docs
+What Companies Actually Use
+A very common production stack today is:
+
+
+
+Frontend (React)
+ 
+      │
+ 
+      ▼
+ 
+FastAPI
+ 
+      │
+ 
+      ▼
+ 
+LangGraph
+ 
+      │
+ 
+      ▼
+ 
+LangChain
+ 
+      │
+ 
+      ▼
+ 
+RAG (ChromaDB/Pinecone)
+ 
+      │
+ 
+      ▼
+ 
+LLM (OpenAI/Ollama/Llama)
+ 
+      │
+ 
+      ▼
+ 
+MCP Tools
+(Postgres, GitHub, Jira, Slack)
+Your Immediate Next Steps
+Because you've completed ingestion:
+
+
+
+1. Build query.py
+2. Verify retrieval works
+3. Connect LangChain + Ollama
+4. Build LangGraph workflow
+5. Create FastAPI endpoints
+6. Add MCP tools
+7. Build UI
+8. Dockerize project
+For your learning journey, the best sequence is:
+
+
+
+RAG ✅
+LangChain ← NEXT
+LangGraph
+FastAPI
+MCP
+Docker
+Deployment
+Don't jump directly to MCP yet. First make:
+
+
+
+Question
+→ ChromaDB
+→ Llama
+→ Answer
+work successfully. Then add LangGraph and MCP on top of that foundation.
+
+
+
+
+
+
+phase 3
+Phase 3: LangChain + Ollama Integration
+You have completed:
+
+
+
+Phase 1: Documents                 ✅
+Phase 2: ChromaDB Ingestion        ✅
+Phase 3: LangChain + Ollama        ← NOW
+Goal
+Before:
+
+
+
+User Question
+      │
+      ▼
+ChromaDB
+      │
+      ▼
+Document Text
+Output:
+
+
+
+Minimum CIBIL score is 750.
+After Phase 3:
+
+
+
+User Question
+      │
+      ▼
+ChromaDB
+      │
+      ▼
+Relevant Context
+      │
+      ▼
+Llama 3.2
+      │
+      ▼
+Human-Friendly Answer
+Output:
+
+
+
+According to the loan policy,
+the minimum CIBIL score required
+for loan approval is 750.
+Create query_llm.py
+
+
+nano chroma_db_code/query_llm.py
+Paste:
+
+
+
+from pathlib import Path
+ 
+from langchain_ollama import ChatOllama
+from langchain_ollama import OllamaEmbeddings
+ 
+from langchain_community.vectorstores import Chroma
+ 
+BASE = Path(__file__).resolve().parent.parent
+DB_DIR = str(BASE / "chroma_db_storage")
+ 
+embeddings = OllamaEmbeddings(
+    model="nomic-embed-text"
+)
+ 
+db = Chroma(
+    persist_directory=DB_DIR,
+    embedding_function=embeddings
+)
+ 
+llm = ChatOllama(
+    model="llama3.2:1b"
+)
+ 
+question = input("Ask Question: ")
+ 
+docs = db.similarity_search(
+    question,
+    k=2
+)
+ 
+context = "\n".join(
+    [doc.page_content for doc in docs]
+)
+ 
+prompt = f"""
+You are a loan assistant.
+ 
+Context:
+{context}
+ 
+Question:
+{question}
+ 
+Answer based only on the context.
+"""
+ 
+response = llm.invoke(prompt)
+ 
+print("\nANSWER:\n")
+print(response.content)
+Save:
+
+
+
+CTRL + O
+ENTER
+CTRL + X
+Run
+Go to project root:
+
+
+
+cd /root/my-loan-project
+Execute:
+
+
+
+python -m chroma_db_code.query_llm
+Example
+User:
+
+
+
+What is minimum CIBIL score?
+Backend:
+
+
+
+Question
+    │
+    ▼
+Embedding
+    │
+    ▼
+Chroma Search
+    │
+    ▼
+Relevant Documents
+    │
+    ▼
+Llama 3.2
+    │
+    ▼
+Formatted Answer
+Result:
+
+
+
+According to the provided loan policy,
+the minimum CIBIL score required is 750.
+What LangChain Is Doing Here
+Without LangChain:
+
+
+
+You manually call Ollama
+You manually call ChromaDB
+You manually build prompts
+You manually manage formats
+With LangChain:
+
+
+
+Question
+    │
+    ▼
+Retriever
+    │
+    ▼
+Prompt
+    │
+    ▼
+LLM
+    │
+    ▼
+Response
+LangChain is the glue connecting everything.
+
+Architecture After Phase 3
+
+
+Loan Documents
+       │
+       ▼
+ChromaDB
+       │
+       ▼
+Retriever
+       │
+       ▼
+LangChain
+       │
+       ▼
+Ollama (Llama3.2)
+       │
+       ▼
+Answer
+Verify Everything
+Check model:
+
+
+
+ollama list
+Check DB:
+
+
+
+ls chroma_db_storage
+Run chatbot:
+
+
+
+python -m chroma_db_code.query_llm
+Ask:
+
+
+
+What is minimum CIBIL score?
+What is loan policy?
+Who is eligible for loan?
+After Phase 3
+Next phases:
+
+
+
+Phase 1  Documents                    ✅
+Phase 2  ChromaDB                     ✅
+Phase 3  LangChain + Ollama           ✅
+Phase 4  LangGraph                    ← Next
+Phase 5  FastAPI
+Phase 6  MCP
+Phase 7  UI
+Phase 8  Docker
+Phase 9  Deployment
+Phase 4 (LangGraph) is where your app becomes intelligent and can decide:
+
+
+
+Search documents?
+      OR
+Call database?
+      OR
+Use tool?
+      OR
+Answer directly?
+That is the next major step after query_llm.py works successfully. 🚀
+
+
+
+
+
+
+image.png
+🎉 Excellent! Phase 3 is working.
+
+From your screenshot:
+
+
+
+Ask Question: what is the minimum CIBIL score?
+ 
+ANSWER:
+ 
+1. First condition result: FAIL
+2. Exception rule: No bank statement
+3. Bank statement check: Yes
+4. Final decision: FAIL
+ 
+This proves:
+
+✅ ChromaDB searched successfully
+✅ Documents were retrieved
+✅ Ollama generated an answer
+✅ LangChain connected ChromaDB + Ollama
+✅ Your RAG pipeline is running
+
+Why Didn't It Say "750"?
+You asked:
+
+
+
+What is the minimum CIBIL score?
+But the answer returned:
+
+
+
+FAIL
+No bank statement
+This means one of these is true:
+
+Possibility 1
+Your documents contain something like:
+
+
+
+First condition result: FAIL
+No bank statement
+and ChromaDB retrieved that chunk.
+
+Possibility 2
+The document does not actually contain:
+
+
+
+Minimum CIBIL score is 750
+Possibility 3
+The wrong chunk was retrieved because you only have:
+
+
+
+2 chunks
+stored in ChromaDB.
+
+Check What Chroma Retrieved
+Modify:
+
+
+
+print("\nCONTEXT:\n")
+print(context)
+Add it before:
+
+
+
+response = llm.invoke(prompt)
+Example:
+
+
+
+print("\nCONTEXT:\n")
+print(context)
+ 
+response = llm.invoke(prompt)
+Run again:
+
+
+
+python -m chroma_db_code.query_llm
+Ask:
+
+
+
+What is minimum CIBIL score?
+Now you'll see:
+
+
+
+CONTEXT:
+-------------
+actual retrieved text
+-------------
+Then you'll understand exactly what ChromaDB found.
+
+What You Learned in Phase 3
+Before:
+
+
+
+Question
+   ↓
+Documents
+After:
+
+
+
+Question
+   ↓
+ChromaDB
+   ↓
+Context
+   ↓
+Llama
+   ↓
+Answer
+This is a complete RAG Application.
+
+Phase 4: LangGraph
+Now we'll introduce a "decision maker".
+
+Current:
+
+
+
+User
+ │
+ ▼
+RAG Search
+ │
+ ▼
+LLM
+ │
+ ▼
+Answer
+LangGraph adds:
+
+
+
+User
+ │
+ ▼
+Decision Node
+ │
+ ├── Search Documents
+ │
+ ├── Call Database
+ │
+ ├── Use Tool
+ │
+ └── Answer Directly
+ │
+ ▼
+Answer
+Kid Version
+Right now your AI behaves like:
+
+
+
+Teacher:
+Find answer.
+ 
+Student:
+Looks in book.
+Reads page.
+Answers.
+LangGraph turns it into:
+
+
+
+Teacher:
+Find answer.
+ 
+Student:
+Should I read book?
+Should I ask database?
+Should I use calculator?
+Should I answer directly?
+ 
+Chooses best path.
+Answers.
+Recommended Next Steps
+Install LangGraph:
+
+
+
+pip install langgraph
+Verify:
+
+
+
+pip show langgraph
+Then we'll create:
+
+
+
+graph.py
+with:
+
+
+
+START
+  ↓
+Retrieve Node
+  ↓
+Decision Node
+  ↓
+Answer Node
+  ↓
+END
+Current Progress
+
+
+Phase 1 Documents                 ✅
+Phase 2 ChromaDB                  ✅
+Phase 3 LangChain + Ollama        ✅
+Phase 4 LangGraph                ⏭️ Next
+Phase 5 FastAPI
+Phase 6 MCP
+Phase 7 UI
+Phase 8 Docker
+You're now at the point where the project has become a real working RAG chatbot, and the next step is to add LangGraph orchestration. 🚀
+
+
+
+
+
+
+Phase 4 LangGraph    
+Phase 4: LangGraph
+You have completed:
+
+
+
+Phase 1  Documents              ✅
+Phase 2  ChromaDB               ✅
+Phase 3  LangChain + Ollama     ✅
+Phase 4  LangGraph              ← NOW
+What Problem Does LangGraph Solve?
+Current flow:
+
+
+
+Question
+   │
+   ▼
+ChromaDB
+   │
+   ▼
+Llama
+   │
+   ▼
+Answer
+ 
+Very simple.
+
+But what if:
+
+
+
+Question: What is minimum CIBIL score?
+Need:
+
+
+
+RAG Search
+And:
+
+
+
+Question: What is 10000 * 12?
+Need:
+
+
+
+Calculator
+And:
+
+
+
+Question: Get customer details
+Need:
+
+
+
+Database
+Who decides?
+
+👉 LangGraph
+
+Kid Example
+Imagine a smart student.
+
+Teacher asks:
+
+
+
+What is minimum CIBIL score?
+Student thinks:
+
+
+
+Need book
+Teacher asks:
+
+
+
+What is 5 * 5?
+Student thinks:
+
+
+
+Need calculator
+Teacher asks:
+
+
+
+What is my customer balance?
+Student thinks:
+
+
+
+Need database
+The "thinking and choosing" part is LangGraph.
+
+Install LangGraph
+
+
+pip install langgraph
+Verify:
+
+
+
+pip show langgraph
+Create Phase 4 File
+
+
+nano chroma_db_code/graph_demo.py
+Paste:
+
+
+
+from typing import TypedDict
+ 
+from langgraph.graph import StateGraph, END
+ 
+ 
+class LoanState(TypedDict):
+    question: str
+    answer: str
+ 
+ 
+def retrieve_node(state):
+    print("Searching policy documents...")
+ 
+    return {
+        "answer": "Minimum CIBIL score is 750"
+    }
+ 
+ 
+builder = StateGraph(LoanState)
+ 
+builder.add_node("retrieve", retrieve_node)
+ 
+builder.set_entry_point("retrieve")
+ 
+builder.add_edge("retrieve", END)
+ 
+graph = builder.compile()
+ 
+result = graph.invoke(
+    {
+        "question": "What is minimum CIBIL score?"
+    }
+)
+ 
+print(result)
+Save:
+
+
+
+CTRL + O
+ENTER
+CTRL + X
+Run
+
+
+python -m chroma_db_code.graph_demo
+Expected:
+
+
+
+Searching policy documents...
+ 
+{'question': 'What is minimum CIBIL score?',
+ 'answer': 'Minimum CIBIL score is 750'}
+What Happened?
+LangGraph created:
+
+
+
+START
+  │
+  ▼
+Retrieve
+  │
+  ▼
+END
+This is a graph.
+
+Real Loan Assistant Graph
+Next we upgrade to:
+
+
+
+                START
+                  │
+                  ▼
+          Question Router
+                  │
+       ┌──────────┼──────────┐
+       │          │          │
+       ▼          ▼          ▼
+ 
+   RAG Search  Database   Direct Answer
+ 
+       │          │          │
+       └──────────┼──────────┘
+                  │
+                  ▼
+               Answer
+                  │
+                  ▼
+                 END
+Create Router Example
+Create:
+
+
+
+nano chroma_db_code/router_graph.py
+Paste:
+
+
+
+from typing import TypedDict
+ 
+from langgraph.graph import StateGraph, END
+ 
+ 
+class State(TypedDict):
+    question: str
+    route: str
+    answer: str
+ 
+ 
+def router(state):
+    q = state["question"].lower()
+ 
+    if "cibil" in q:
+        return {"route": "rag"}
+ 
+    return {"route": "direct"}
+ 
+ 
+def rag_node(state):
+    return {
+        "answer": "Minimum CIBIL score is 750"
+    }
+ 
+ 
+def direct_node(state):
+    return {
+        "answer": "General answer"
+    }
+ 
+ 
+builder = StateGraph(State)
+ 
+builder.add_node("router", router)
+builder.add_node("rag", rag_node)
+builder.add_node("direct", direct_node)
+ 
+builder.set_entry_point("router")
+ 
+ 
+def choose_route(state):
+    return state["route"]
+ 
+ 
+builder.add_conditional_edges(
+    "router",
+    choose_route,
+    {
+        "rag": "rag",
+        "direct": "direct",
+    }
+)
+ 
+builder.add_edge("rag", END)
+builder.add_edge("direct", END)
+ 
+graph = builder.compile()
+ 
+result = graph.invoke(
+    {
+        "question": input("Ask: ")
+    }
+)
+ 
+print(result["answer"])
+Test
+Run:
+
+
+
+python -m chroma_db_code.router_graph
+Ask:
+
+
+
+What is minimum cibil score?
+Output:
+
+
+
+Minimum CIBIL score is 750
+Ask:
+
+
+
+Hello
+Output:
+
+
+
+General answer
+Backend Understanding
+Current Phase 3:
+
+
+
+Question
+   │
+   ▼
+RAG
+   │
+   ▼
+LLM
+Phase 4:
+
+
+
+Question
+   │
+   ▼
+Router
+   │
+   ├── RAG
+   │
+   ├── Database
+   │
+   ├── Tool
+   │
+   └── Direct LLM
+   │
+   ▼
+Answer
+After Phase 4
+Next phases:
+
+
+
+Phase 1 Documents             ✅
+Phase 2 ChromaDB              ✅
+Phase 3 LangChain             ✅
+Phase 4 LangGraph             ✅ (In Progress)
+Phase 5 FastAPI               ← Next
+Phase 6 MCP
+Phase 7 UI
+Phase 8 Docker
+Phase 9 Deployment
+Your next commands
+
+
+pip install langgraph
+ 
+nano chroma_db_code/graph_demo.py
+ 
+python -m chroma_db_code.graph_demo
+Once graph_demo.py works, build router_graph.py and test routing between RAG and Direct Answer. That will give you a real understanding of what LangGraph adds on top of LangChain. 🚀
+
+
+
+
+
+
+next steps
+Perfect. You've finished the core AI parts up to:
+
+
+
+Phase 1  Documents                ✅
+Phase 2  ChromaDB + Embeddings    ✅
+Phase 3  LangChain + Ollama       ✅
+Phase 4  LangGraph                ✅
+Next Step: Phase 5 FastAPI
+Why FastAPI?
+Right now you run:
+
+
+
+python -m chroma_db_code.query_llm
+and type questions in the terminal.
+
+A real application works like:
+
+
+
+Browser
+   │
+   ▼
+FastAPI
+   │
+   ▼
+LangGraph
+   │
+   ▼
+RAG
+   │
+   ▼
+Ollama
+   │
+   ▼
+Answer
+FastAPI allows:
+
+Web UI
+Mobile Apps
+REST APIs
+Swagger Documentation
+Install FastAPI
+
+
+pip install fastapi uvicorn
+Check:
+
+
+
+pip show fastapi
+pip show uvicorn
+Create main.py
+Create:
+
+
+
+nano app.py
+Paste:
+
+
+
+from fastapi import FastAPI
+from langchain_ollama import ChatOllama
+ 
+app = FastAPI()
+ 
+llm = ChatOllama(
+    model="llama3.2:1b"
+)
+ 
+@app.get("/")
+def home():
+    return {"message": "Loan AI Assistant Running"}
+ 
+@app.get("/ask")
+def ask(question: str):
+ 
+    response = llm.invoke(question)
+ 
+    return {
+        "question": question,
+        "answer": response.content
+    }
+Run API
+
+
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+Open:
+
+
+
+http://SERVER_IP:8000
+Swagger:
+
+
+
+http://SERVER_IP:8000/docs
+
+
+===========
+
+
+What You'll See
+
+Swagger UI:
+
+Plain Text
+GET /
+GET /ask
+
+Test:
+
+Plain Text
+What is minimum CIBIL score?
+Phase 5 Goal
+
+Current:
+
+Plain Text
+Terminal
+│
+▼
+Question
+
+After FastAPI:
+
+Plain Text
+Browser
+│
+▼
+API
+│
+▼
+Answer
+Phase 6 (After FastAPI)
+
+We'll replace:
+
+Plain Text
+Browser
+│
+▼
+LLM
+
+with
+
+Plain Text
+Browser
+│
+▼
+FastAPI
+│
+▼
+LangGraph
+│
+▼
+ChromaDB
+│
+▼
+Ollama
+
+This becomes a proper RAG API.
+
+Then Phase 7: MCP
+
+Add tools:
+
+Plain Text
+MCP Server
+│
+├── PostgreSQL
+├── Files
+├── GitHub
+├── Jira
+├── Email
+
+Example:
+
+Plain Text
+Customer asks:
+Show customer loan history.
+ 
+AI
+↓
+MCP
+↓
+PostgreSQL
+↓
+Returns data
+Final Architecture You'll Build
+Plain Text
+User
+│
+▼
+FastAPI
+│
+▼
+LangGraph
+│
+├── RAG Search (ChromaDB)
+│
+├── MCP Tools
+│
+└── Business Rules
+│
+▼
+LangChain
+│
+▼
+Ollama (Llama3.2)
+│
+▼
+Answer
+Immediate Next Commands
+Shell
+pip install fastapi uvicorn
+ 
+nano app.py
+ 
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+
+After that, open:
+
+Plain Text
+http://YOUR_SERVER_IP:8000/docs
+
+and you will have your first AI REST API running. 🚀
+
