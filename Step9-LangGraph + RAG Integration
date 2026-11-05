@@ -1,0 +1,413 @@
+LangGraph + RAG Integration
+
+You already have:
+
+Plain Text
+Question
+│
+▼
+FastAPI
+│
+▼
+ChromaDB
+│
+▼
+Ollama
+│
+▼
+Answer
+ 
+
+Now we'll put LangGraph in the middle.
+
+Why LangGraph?
+
+Currently every question goes to:
+
+Plain Text
+RAG Search
+
+Even simple questions like:
+
+Plain Text
+Hello
+
+or
+
+Plain Text
+Who are you?
+
+still search ChromaDB.
+
+That's inefficient.
+
+LangGraph will decide:
+
+Plain Text
+Should I use:
+ 
+1. RAG ?
+2. Direct LLM ?
+3. Tool ?
+4. Database ?
+New Architecture
+Plain Text
+User
+│
+▼
+FastAPI
+│
+▼
+LangGraph Router
+│
+├── RAG Search
+│
+└── Direct Answer
+│
+▼
+Ollama
+│
+▼
+Answer
+Install
+Shell
+pip install langgraph
+
+Verify:
+
+Shell
+pip show langgraph
+
+
+
+==================
+
+
+
+Create graph_rag.py
+Shell
+nano chroma_db_code/graph_rag.py
+
+
+
+from pathlib import Path
+from typing import TypedDict
+
+from langgraph.graph import StateGraph, END
+
+from langchain_ollama import ChatOllama
+from langchain_ollama import OllamaEmbeddings
+from langchain_community.vectorstores import Chroma
+
+
+BASE = Path(__file__).resolve().parent.parent
+DB_DIR = str(BASE / "chroma_db_storage")
+
+
+embeddings = OllamaEmbeddings(
+    model="nomic-embed-text"
+)
+
+db = Chroma(
+    persist_directory=DB_DIR,
+    embedding_function=embeddings
+)
+
+llm = ChatOllama(
+    model="llama3.2:1b"
+)
+
+
+class State(TypedDict):
+    question: str
+    route: str
+    context: str
+    answer: str
+
+
+def router(state):
+    q = state["question"].lower()
+
+    if "loan" in q or "cibil" in q:
+        return {"route": "rag"}
+
+    return {"route": "direct"}
+
+
+def rag_node(state):
+
+    docs = db.similarity_search(
+        state["question"],
+        k=2
+    )
+
+    context = "\n".join(
+        [doc.page_content for doc in docs]
+    )
+
+    prompt = f"""
+Answer only from context.
+
+Context:
+{context}
+
+Question:
+{state['question']}
+"""
+
+    response = llm.invoke(prompt)
+
+    return {
+        "context": context,
+        "answer": response.content
+    }
+
+
+def direct_node(state):
+
+    response = llm.invoke(
+        state["question"]
+    )
+
+    return {
+        "answer": response.content
+    }
+
+
+builder = StateGraph(State)
+
+builder.add_node("router", router)
+builder.add_node("rag", rag_node)
+builder.add_node("direct", direct_node)
+
+builder.set_entry_point("router")
+
+
+def choose_route(state):
+    return state["route"]
+
+
+builder.add_conditional_edges(
+    "router",
+    choose_route,
+    {
+        "rag": "rag",
+        "direct": "direct"
+    }
+)
+
+builder.add_edge("rag", END)
+builder.add_edge("direct", END)
+
+graph = builder.compile()
+
+
+==============
+
+
+
+Create FastAPI Integration
+
+Update your app.py:
+
+from fastapi import FastAPI
+from chroma_db_code.graph_rag import graph
+
+app = FastAPI()
+
+
+@app.get("/")
+def home():
+    return {"message": "LangGraph RAG API Running"}
+
+
+@app.get("/ask")
+def ask(question: str):
+
+    result = graph.invoke(
+        {
+            "question": question
+        }
+    )
+
+    return {
+        "question": question,
+        "answer": result["answer"]
+    }
+
+=================
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from chroma_db_code.graph_rag import graph
+
+app = FastAPI(
+    title="Loan Policy AI Assistant",
+    description="RAG + LangGraph + Ollama + ChromaDB",
+    version="1.0"
+)
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/")
+def home():
+    return {
+        "message": "Loan Policy AI Assistant Running",
+        "technology": [
+            "FastAPI",
+            "LangGraph",
+            "LangChain",
+            "ChromaDB",
+            "Ollama"
+        ]
+    }
+
+
+@app.get("/health")
+def health():
+    return {
+        "status": "UP"
+    }
+
+
+@app.get("/ask")
+def ask(question: str):
+
+    result = graph.invoke(
+        {
+            "question": question
+        }
+    )
+
+    return {
+        "question": question,
+        "answer": result.get("answer", "")
+    }
+
+
+
+
+==============
+
+
+Run
+Shell
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+
+Open:
+
+Plain Text
+http://127.0.0.1:8000/docs
+
+
+===========
+
+
+
+Test 1
+
+Question:
+
+Plain Text
+What is minimum CIBIL score?
+
+Flow:
+
+Plain Text
+Router
+│
+▼
+RAG
+│
+▼
+ChromaDB
+│
+▼
+Ollama
+Test 2
+
+Question:
+
+Plain Text
+Hello
+
+Flow:
+
+Plain Text
+Router
+│
+▼
+Direct LLM
+│
+▼
+Answer
+What You Learned
+
+Before:
+
+Plain Text
+Every question
+│
+▼
+RAG
+
+After:
+
+Plain Text
+Question
+│
+▼
+Router
+│
+├── RAG
+└── Direct LLM
+
+This routing capability is the main idea behind LangGraph.
+
+Next Phase: MCP
+
+After this works, we'll add:
+
+Plain Text
+Question
+│
+▼
+LangGraph
+│
+├── RAG
+├── PostgreSQL
+├── GitHub
+├── Files
+└── Email
+
+using MCP (Model Context Protocol).
+
+At that point your project stack will be:
+
+Plain Text
+FastAPI ✅
+LangGraph ✅
+LangChain ✅
+RAG ✅
+ChromaDB ✅
+Ollama ✅
+MCP ⏭️ Next
+
+and it will closely resemble a real enterprise AI assistant architecture. 🚀
+
+
+====
+
+
+
+
+
