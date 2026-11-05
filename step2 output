@@ -1,0 +1,58 @@
+To check whether query.py exists, run:
+
+Shell
+ls chroma_db_code
+
+Expected output:
+
+Plain Text
+__init__.py
+ingest.py
+query.py
+
+If query.py is present, view its contents:
+
+Shell
+cat chroma_db_code/query.py
+
+or
+
+Shell
+nano chroma_db_code/query.py
+
+To check what was stored in ChromaDB:
+
+Shell
+ls -la chroma_db_storage
+
+You should see files and folders created by ChromaDB.
+
+To verify your documents are still present:
+
+Shell
+ls -la documents
+
+Expected:
+
+Plain Text
+doc1_cibil_rule.txt
+doc2_loan_policy.txt
+Quick Verification Commands
+
+Run these one by one:
+
+Shell
+pwd
+
+Should show:
+
+Plain Text
+/root/my-loan-project
+Shell
+ls chroma_db_code
+Shell
+ls -la chroma_db_storage
+Shell
+ls -la documents
+
+Then send the outputs (especially ls chroma_db_code) and I'll guide you to the next step: asking questions from your loan documents using ChromaDB and Ollama. 🚀
