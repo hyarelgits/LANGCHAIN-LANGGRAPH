@@ -1,0 +1,83 @@
+First Fix the Deprecation Warnings
+
+Replace:
+
+Python
+from langchain_community.embeddings import OllamaEmbeddings
+
+with:
+
+Python
+from langchain_ollama import OllamaEmbeddings
+
+Install the package:
+
+Shell
+pip install -U langchain-ollama
+
+Then:
+
+Python
+embeddings = OllamaEmbeddings(
+model="llama3.2:1b"
+)
+Check Ollama
+
+Verify Ollama is running:
+
+Shell
+systemctl status ollama
+
+or
+
+Shell
+ollama serve
+
+In another terminal:
+
+Shell
+ollama list
+
+Expected output should include:
+
+Plain Text
+llama3.2:1b
+
+If not:
+
+Shell
+ollama pull llama3.2:1b
+
+Test:
+
+Shell
+ollama run llama3.2:1b
+Check ChromaDB Packages
+Shell
+pip show chromadb
+pip show langchain
+pip show langchain-community
+pip show langchain-ollama
+
+If missing:
+
+Shell
+pip install chromadb
+pip install langchain
+pip install langchain-community
+pip install langchain-ollama
+Need the Actual Error
+
+Please run:
+
+Shell
+python -m chroma_db_code.ingest 2>&1 | tee error.log
+
+Then send either:
+
+Shell
+tail -50 error.log
+
+or upload the full terminal output.
+
+The screenshot cuts off the most important part, which is the exception shown after main() on line 22, so I need those last lines to identify the exact failure.
