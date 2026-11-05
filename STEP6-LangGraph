@@ -1,0 +1,431 @@
+Phase 4: LangGraph
+
+You have completed:
+
+Plain Text
+Phase 1 Documents ✅
+Phase 2 ChromaDB ✅
+Phase 3 LangChain + Ollama ✅
+Phase 4 LangGraph ← NOW
+What Problem Does LangGraph Solve?
+
+Current flow:
+
+Plain Text
+Question
+│
+▼
+ChromaDB
+│
+▼
+Llama
+│
+▼
+Answer
+ 
+
+Very simple.
+
+But what if:
+
+Plain Text
+Question: What is minimum CIBIL score?
+
+Need:
+
+Plain Text
+RAG Search
+
+And:
+
+Plain Text
+Question: What is 10000 * 12?
+
+Need:
+
+Plain Text
+Calculator
+
+And:
+
+Plain Text
+Question: Get customer details
+
+Need:
+
+Plain Text
+Database
+
+Who decides?
+
+👉 LangGraph
+
+Kid Example
+
+Imagine a smart student.
+
+Teacher asks:
+
+Plain Text
+What is minimum CIBIL score?
+
+Student thinks:
+
+Plain Text
+Need book
+
+Teacher asks:
+
+Plain Text
+What is 5 * 5?
+
+Student thinks:
+
+Plain Text
+Need calculator
+
+Teacher asks:
+
+Plain Text
+What is my customer balance?
+
+Student thinks:
+
+Plain Text
+Need database
+
+The "thinking and choosing" part is LangGraph.
+
+Install LangGraph
+Shell
+pip install langgraph
+
+Verify:
+
+Shell
+pip show langgraph
+
+
+
+==============
+
+
+Create Phase 4 File
+Shell
+nano chroma_db_code/graph_demo.py
+
+
+
+from typing import TypedDict
+
+from langgraph.graph import StateGraph, END
+
+
+class LoanState(TypedDict):
+    question: str
+    answer: str
+
+
+def retrieve_node(state):
+    print("Searching policy documents...")
+
+    return {
+        "answer": "Minimum CIBIL score is 750"
+    }
+
+
+builder = StateGraph(LoanState)
+
+builder.add_node("retrieve", retrieve_node)
+
+builder.set_entry_point("retrieve")
+
+builder.add_edge("retrieve", END)
+
+graph = builder.compile()
+
+result = graph.invoke(
+    {
+        "question": "What is minimum CIBIL score?"
+    }
+)
+
+print(result)
+
+============
+
+from typing import TypedDict
+
+from langgraph.graph import StateGraph, END
+
+
+class LoanState(TypedDict):
+    question: str
+    answer: str
+
+
+def retrieve_node(state):
+    print("Searching policy documents...")
+
+    return {
+        "answer": "Minimum CIBIL score is 750"
+    }
+
+
+builder = StateGraph(LoanState)
+
+builder.add_node("retrieve", retrieve_node)
+
+builder.set_entry_point("retrieve")
+
+builder.add_edge("retrieve", END)
+
+graph = builder.compile()
+
+result = graph.invoke(
+    {
+        "question": "What is minimum CIBIL score?"
+    }
+)
+
+print(result)
+
+
+-==============
+
+
+Save:
+
+Plain Text
+CTRL + O
+ENTER
+CTRL + X
+Run
+Shell
+python -m chroma_db_code.graph_demo
+
+
+
+=====
+
+
+Expected:
+
+Plain Text
+Searching policy documents...
+ 
+{'question': 'What is minimum CIBIL score?',
+'answer': 'Minimum CIBIL score is 750'}
+
+
+==
+
+
+What Happened?
+
+LangGraph created:
+
+Plain Text
+START
+│
+▼
+Retrieve
+│
+▼
+END
+
+
+
+=========
+
+
+Real Loan Assistant Graph
+
+
+                START
+                  │
+                  ▼
+          Question Router
+                  │
+       ┌──────────┼──────────┐
+       │          │          │
+       ▼          ▼          ▼
+
+   RAG Search  Database   Direct Answer
+
+       │          │          │
+       └──────────┼──────────┘
+                  │
+                  ▼
+               Answer
+                  │
+                  ▼
+                 END
+
+
+
+=======
+
+Create Router Example
+
+Create:
+
+Shell
+nano chroma_db_code/router_graph.py
+
+Paste:
+
+from typing import TypedDict
+
+from langgraph.graph import StateGraph, END
+
+
+class State(TypedDict):
+    question: str
+    route: str
+    answer: str
+
+
+def router(state):
+    q = state["question"].lower()
+
+    if "cibil" in q:
+        return {"route": "rag"}
+
+    return {"route": "direct"}
+
+
+def rag_node(state):
+    return {
+        "answer": "Minimum CIBIL score is 750"
+    }
+
+
+def direct_node(state):
+    return {
+        "answer": "General answer"
+    }
+
+
+builder = StateGraph(State)
+
+builder.add_node("router", router)
+builder.add_node("rag", rag_node)
+builder.add_node("direct", direct_node)
+
+builder.set_entry_point("router")
+
+
+def choose_route(state):
+    return state["route"]
+
+
+builder.add_conditional_edges(
+    "router",
+    choose_route,
+    {
+        "rag": "rag",
+        "direct": "direct",
+    }
+)
+
+builder.add_edge("rag", END)
+builder.add_edge("direct", END)
+
+graph = builder.compile()
+
+result = graph.invoke(
+    {
+        "question": input("Ask: ")
+    }
+)
+
+print(result["answer"])
+
+
+===========
+
+
+Test
+
+Run:
+
+Shell
+python -m chroma_db_code.router_graph
+
+Ask:
+
+Plain Text
+What is minimum cibil score?
+
+Output:
+
+Plain Text
+Minimum CIBIL score is 750
+
+Ask:
+
+Plain Text
+Hello
+
+Output:
+
+Plain Text
+General answer
+Backend Understanding
+
+Current Phase 3:
+
+Plain Text
+Question
+│
+▼
+RAG
+│
+▼
+LLM
+
+Phase 4:
+
+Plain Text
+Question
+│
+▼
+Router
+│
+├── RAG
+│
+├── Database
+│
+├── Tool
+│
+└── Direct LLM
+│
+▼
+Answer
+After Phase 4
+
+Next phases:
+
+Plain Text
+Phase 1 Documents ✅
+Phase 2 ChromaDB ✅
+Phase 3 LangChain ✅
+Phase 4 LangGraph ✅ (In Progress)
+Phase 5 FastAPI ← Next
+Phase 6 MCP
+Phase 7 UI
+Phase 8 Docker
+Phase 9 Deployment
+Your next commands
+Shell
+pip install langgraph
+ 
+nano chroma_db_code/graph_demo.py
+ 
+python -m chroma_db_code.graph_demo
+
+Once graph_demo.py works, build router_graph.py and test routing between RAG and Direct Answer. That will give you a real understanding of what LangGraph adds on top of LangChain. 🚀
+
+
+
