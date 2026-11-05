@@ -82,7 +82,152 @@ def ask(question: str):
 
 =============
 
+Run API
+Shell
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
 
+Open:
+
+Plain Text
+http://SERVER_IP:8000
+
+Swagger:
+
+Plain Text
+http://SERVER_IP:8000/docs
+What You'll See
+
+Swagger UI:
+
+Plain Text
+GET /
+GET /ask
+
+Test:
+
+Plain Text
+What is minimum CIBIL score?
+Phase 5 Goal
+
+Current:
+
+Plain Text
+Terminal
+│
+▼
+Question
+
+After FastAPI:
+
+Plain Text
+Browser
+│
+▼
+API
+│
+▼
+Answer
+Phase 6 (After FastAPI)
+
+We'll replace:
+
+Plain Text
+Browser
+│
+▼
+LLM
+
+with
+
+Plain Text
+Browser
+│
+▼
+FastAPI
+│
+▼
+LangGraph
+│
+▼
+ChromaDB
+│
+▼
+Ollama
+
+This becomes a proper RAG API.
+
+Then Phase 7: MCP
+
+Add tools:
+
+Plain Text
+MCP Server
+│
+├── PostgreSQL
+├── Files
+├── GitHub
+├── Jira
+├── Email
+
+Example:
+
+Plain Text
+Customer asks:
+Show customer loan history.
+ 
+AI
+↓
+MCP
+↓
+PostgreSQL
+↓
+Returns data
+Final Architecture You'll Build
+Plain Text
+User
+│
+▼
+FastAPI
+│
+▼
+LangGraph
+│
+├── RAG Search (ChromaDB)
+│
+├── MCP Tools
+│
+└── Business Rules
+│
+▼
+LangChain
+│
+▼
+Ollama (Llama3.2)
+│
+▼
+Answer
+Immediate Next Commands
+Shell
+pip install fastapi uvicorn
+ 
+nano app.py
+ 
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+
+After that, open:
+
+Plain Text
+http://YOUR_SERVER_IP:8000/docs
+
+and you will have your first AI REST API running. 🚀
+
+
+
+
+
+
+
++++++++++++++++=
 Upgrade
 
 
