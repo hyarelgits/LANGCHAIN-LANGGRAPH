@@ -1,0 +1,397 @@
+AI Loan Assistant Project Setup Guide
+Part 0 - Open Terminal & Check the Machine
+
+Press Ctrl + Alt + T to open Terminal.
+
+Basic Checks
+Shell
+pwd
+ls
+
+pwd shows your current location.
+ ls shows files and folders.
+
+Part 1 - Install Ollama (Local LLM)
+
+Ollama runs the LLM locally.
+
+Benefits:
+
+No API key required
+Works offline after installation
+Runs models on your machine
+Part 2 - Install PostgreSQL
+
+PostgreSQL stores structured data.
+
+PostgreSQL Setup
+
+Run the installation commands.
+
+Type SQL commands one by one inside psql.
+
+Exit PostgreSQL:
+
+SQL
+\q
+Part 3 - Create Project & Virtual Environment
+
+A virtual environment keeps project dependencies isolated.
+
+Project Folder
+Shell
+mkdir my-loan-project
+cd my-loan-project
+ 
+python3 -m venv venv
+source venv/bin/activate
+Part 4 - Requirements
+Create requirements.txt
+Plain Text
+fastapi
+uvicorn
+langchain
+langchain-community
+langgraph
+chromadb
+sentence-transformers
+psycopg2-binary
+ollama
+Install Packages
+Shell
+pip install -r requirements.txt
+Gap Bridge: Pip Errors
+externally-managed-environment
+
+Use virtual environment:
+
+Shell
+source venv/bin/activate
+Module Not Found
+Shell
+pip install -r requirements.txt
+LangChain Version Issues
+
+Install individually:
+
+Shell
+pip install langchain
+pip install langchain-community
+pip install langgraph
+Part 5 - Create Folder Structure
+Plain Text
+my-loan-project/
+│
+├── agents/
+│ ├── __init__.py
+│ ├── search_agent.py
+│ ├── db_agent.py
+│ └── writer_agent.py
+│
+├── chroma_db_code/
+│ ├── __init__.py
+│ ├── ingest.py
+│ ├── search.py
+│ ├── query.py
+│ └── update.py
+│
+├── documents/
+│ ├── doc1_cibil_rule.txt
+│ └── doc2_loan_policy.txt
+│
+├── main.py
+├── langgraph_flow.py
+└── requirements.txt
+
+Without __init__.py, Python may throw:
+
+Plain Text
+ModuleNotFoundError: No module named 'agents'
+ModuleNotFoundError: No module named 'chroma_db_code'
+Part 6 - Documents
+
+Create the following files inside documents/.
+
+Plain Text
+documents/doc1_cibil_rule.txt
+documents/doc2_loan_policy.txt
+Part 7 - Python Files
+
+Create the following files:
+
+Plain Text
+chroma_db_code/ingest.py
+chroma_db_code/search.py
+chroma_db_code/query.py
+chroma_db_code/update.py
+ 
+agents/search_agent.py
+agents/db_agent.py
+agents/writer_agent.py
+ 
+langgraph_flow.py
+main.py
+Part 8 - Run the Project
+
+From project root:
+
+Shell
+source venv/bin/activate
+python chroma_db_code/ingest.py
+ 
+uvicorn main:app --reload
+Open in Browser
+
+Swagger UI:
+
+Plain Text
+http://localhost:8000/docs
+
+Health Check:
+
+Plain Text
+http://localhost:8000/health
+Part 9 - Troubleshooting
+Ollama Connection Refused
+
+Cause: Ollama not running.
+
+Shell
+ollama serve
+ModuleNotFoundError
+
+Cause: Missing __init__.py.
+
+Shell
+touch agents/__init__.py
+touch chroma_db_code/__init__.py
+Missing Packages
+Shell
+pip install -r requirements.txt
+PostgreSQL Connection Failed
+
+Verify:
+
+Shell
+sudo systemctl status postgresql
+
+Start service:
+
+Shell
+sudo systemctl start postgresql
+Port 8000 In Use
+Shell
+lsof -i :8000
+kill -9 <PID>
+Ollama Model Not Found
+Shell
+ollama pull llama3
+Permission Denied
+Shell
+sudo chown -R $USER:$USER my-loan-project
+Final Checklist
+✅ Ollama Installed
+✅ PostgreSQL Running
+✅ Virtual Environment Created
+✅ Dependencies Installed
+✅ Documents Ingested
+✅ LangGraph Workflow Working
+✅ FastAPI Running
+✅ Swagger UI Available
+✅ Local AI Responses Working
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===============================
+
+
+COMPLETE AI LOAN ASSISTANT PROJECT LAB GUIDE
+=================================================
+
+PROJECT OVERVIEW
+Build an AI-powered Loan Assistant using:
+- Ubuntu VM
+- Python 3
+- Ollama (Local LLM)
+- PostgreSQL
+- ChromaDB
+- LangChain
+- LangGraph
+- FastAPI
+
+PART 0 - UBUNTU PREPARATION
+1. Open Terminal: Ctrl+Alt+T
+2. Update system:
+sudo apt update
+sudo apt upgrade -y
+
+3. Install utilities:
+sudo apt install curl wget git tree python3-pip python3-venv -y
+
+Verify:
+python3 --version
+git --version
+
+PART 1 - INSTALL OLLAMA
+curl -fsSL https://ollama.com/install.sh | sh
+ollama --version
+
+Start service:
+ollama serve
+
+Open second terminal:
+ollama pull llama3
+ollama list
+
+Test:
+ollama run llama3
+Type: Hello
+
+PART 2 - INSTALL POSTGRESQL
+sudo apt install postgresql postgresql-contrib -y
+sudo systemctl enable postgresql
+sudo systemctl start postgresql
+sudo systemctl status postgresql
+
+Create database:
+sudo -u postgres psql
+CREATE DATABASE loan_db;
+CREATE USER loanuser WITH PASSWORD 'loan123';
+GRANT ALL PRIVILEGES ON DATABASE loan_db TO loanuser;
+\q
+
+PART 3 - CREATE PROJECT
+cd ~
+mkdir ai-loan-assistant
+cd ai-loan-assistant
+
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+
+PART 4 - REQUIREMENTS
+Create requirements.txt
+
+fastapi
+uvicorn
+langchain
+langchain-community
+langgraph
+chromadb
+sentence-transformers
+psycopg2-binary
+langchain-ollama
+pydantic
+
+Install:
+pip install -r requirements.txt
+
+PART 5 - PROJECT STRUCTURE
+mkdir agents chroma_db_code documents
+mkdir database
+
+touch agents/__init__.py
+touch chroma_db_code/__init__.py
+
+PART 6 - DOCUMENTS
+Create documents/doc1.txt
+Minimum CIBIL score is 700.
+
+Create documents/doc2.txt
+Loans above 10 lakh require manager approval.
+
+PART 7 - INGESTION LOGIC
+Create ingest.py
+Purpose: Load text files into ChromaDB.
+
+PART 8 - SEARCH LOGIC
+Create search.py
+Purpose: Search relevant loan documents.
+
+PART 9 - DATABASE TABLE
+psql -U postgres
+\c loan_db
+
+CREATE TABLE customers(
+id SERIAL PRIMARY KEY,
+name VARCHAR(100),
+cibil_score INT,
+loan_amount NUMERIC
+);
+
+PART 10 - FASTAPI APPLICATION
+Create main.py
+Features:
+- /health
+- /ask
+- /customers
+
+Run:
+uvicorn main:app --reload
+
+PART 11 - TEST
+Open:
+http://localhost:8000/docs
+http://localhost:8000/health
+
+PART 12 - DOCKER
+Create Dockerfile
+FROM python:3.11
+WORKDIR /app
+COPY . .
+RUN pip install -r requirements.txt
+CMD ["uvicorn","main:app","--host","0.0.0.0","--port","8000"]
+
+Build:
+docker build -t ai-loan-assistant .
+
+docker run -p 8000:8000 ai-loan-assistant
+
+PART 13 - TROUBLESHOOTING
+Problem: ModuleNotFoundError
+Fix: Activate venv and reinstall dependencies.
+
+Problem: Ollama connection refused
+Fix: ollama serve
+
+Problem: Port 8000 in use
+Fix:
+lsof -i :8000
+kill -9 PID
+
+FINAL CHECKLIST
+[ ] Ubuntu updated
+[ ] Ollama installed
+[ ] llama3 downloaded
+[ ] PostgreSQL installed
+[ ] Database created
+[ ] Python venv created
+[ ] Dependencies installed
+[ ] Documents created
+[ ] FastAPI working
+[ ] Swagger UI working
+[ ] Docker build successful
