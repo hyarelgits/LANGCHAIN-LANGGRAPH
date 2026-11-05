@@ -1,0 +1,221 @@
+Great! Let's turn your current FastAPI into a RAG API.
+
+Current API (What You Have)
+Plain Text
+Question
+│
+▼
+FastAPI
+│
+▼
+Ollama
+│
+▼
+Answer
+
+This uses only the LLM's general knowledge.
+
+RAG API (What You Need)
+Plain Text
+Question
+│
+▼
+FastAPI
+│
+▼
+ChromaDB
+│
+▼
+Relevant Documents
+│
+▼
+Ollama
+│
+▼
+Answer
+
+Now answers come from your loan documents.
+
+Replace app.py
+
+
+from pathlib import Path
+
+from fastapi import FastAPI
+
+from langchain_ollama import ChatOllama
+from langchain_ollama import OllamaEmbeddings
+
+from langchain_community.vectorstores import Chroma
+
+app = FastAPI()
+
+BASE = Path(__file__).resolve().parent
+DB_DIR = str(BASE / "chroma_db_storage")
+
+embeddings = OllamaEmbeddings(
+    model="nomic-embed-text"
+)
+
+db = Chroma(
+    persist_directory=DB_DIR,
+    embedding_function=embeddings
+)
+
+llm = ChatOllama(
+    model="llama3.2:1b"
+)
+
+
+@app.get("/")
+def home():
+    return {
+        "message": "Loan RAG API Running"
+    }
+
+
+@app.get("/ask")
+def ask(question: str):
+
+    docs = db.similarity_search(
+        question,
+        k=2
+    )
+
+    context = "\n".join(
+        [doc.page_content for doc in docs]
+    )
+
+    prompt = f"""
+You are a loan policy assistant.
+
+Answer only from the context.
+
+Context:
+{context}
+
+Question:
+{question}
+"""
+
+    response = llm.invoke(prompt)
+
+    return {
+        "question": question,
+        "context": context,
+        "answer": response.content
+    }
+
+
+
+==========
+
+Start API
+Shell
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+
+Open:
+
+Plain Text
+http://SERVER-IP:8000/docs
+
+
+Test
+
+Question:
+
+Plain Text
+What is minimum CIBIL score?
+
+Expected flow:
+
+Plain Text
+Question
+│
+▼
+Embedding
+│
+▼
+ChromaDB Search
+│
+▼
+Relevant Loan Policy
+│
+▼
+Prompt Creation
+│
+▼
+Llama 3.2
+│
+▼
+Answer
+Add Debug Output
+
+Return retrieved context too:
+
+Python
+return {
+"question": question,
+"context": context,
+"answer": response.content
+}
+
+This helps verify:
+
+Plain Text
+Did ChromaDB retrieve the correct document?
+Architecture After RAG API
+Plain Text
+Browser
+│
+▼
+FastAPI
+│
+▼
+LangChain
+│
+▼
+ChromaDB
+│
+▼
+Loan Documents
+│
+▼
+Ollama
+│
+▼
+Answer
+What You Will Have Completed
+Plain Text
+Documents ✅
+Embeddings ✅
+ChromaDB ✅
+LangChain ✅
+LangGraph Basics ✅
+FastAPI ✅
+RAG API ✅
+Next Phase
+
+After the RAG API works:
+
+Plain Text
+Phase 6: LangGraph + RAG API
+
+Flow:
+
+Plain Text
+Question
+│
+▼
+Router
+│
+├── RAG Search
+├── Direct Answer
+├── Database Tool
+└── MCP Tool
+│
+▼
+Answer
+
+That is where your project starts looking like a real enterprise AI assistant. 🚀
+
