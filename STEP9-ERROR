@@ -1,0 +1,85 @@
+The screenshot still doesn't show the actual error line. It stops at:
+
+Plain Text
+File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+
+The important part is below this.
+
+Fastest Way to See the Real Error
+
+Run:
+
+Shell
+uvicorn app:app --reload --host 0.0.0.0 --port 8000 > output.log 2>&1
+
+Then in another terminal:
+
+Shell
+tail -50 output.log
+
+Or:
+
+Shell
+cat output.log
+Most Likely Cause
+
+Because you just changed app.py to:
+
+Python
+from chroma_db_code.graph_rag import graph
+
+One of these is likely failing:
+
+Plain Text
+ModuleNotFoundError: No module named 'langgraph'
+
+Check:
+
+Shell
+pip show langgraph
+
+or
+
+Shell
+pip list | grep langgraph
+
+If not installed:
+
+Shell
+pip install langgraph
+
+Or:
+
+Plain Text
+ModuleNotFoundError: No module named 'chroma_db_code.graph_rag'
+
+Check:
+
+Shell
+ls chroma_db_code
+
+Expected:
+
+Plain Text
+__init__.py
+graph_rag.py
+ingest.py
+query.py
+query_llm.py
+
+If graph_rag.py is missing, create it.
+
+Quick Test
+
+Run directly:
+
+Shell
+python -c "from chroma_db_code.graph_rag import graph; print('OK')"
+
+If there is an error, Python will immediately show the exact problem.
+
+Please run:
+Shell
+python -c "from chroma_db_code.graph_rag import graph; print('OK')"
+
+and paste the full output. That command will pinpoint the error much faster than scrolling through the uvicorn traceback.
