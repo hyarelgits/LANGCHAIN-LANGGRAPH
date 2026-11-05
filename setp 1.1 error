@@ -1,0 +1,115 @@
+I can see the problem in your ingest.py.
+
+Current code:
+
+Python
+embeddings = OllamaEmbeddings(model="llama3.2:1b")
+
+Your error says:
+
+Plain Text
+This server does not support embeddings
+Fix 1: Install newer Ollama LangChain package
+Shell
+pip install -U langchain-ollama
+Fix 2: Change the import
+
+Replace:
+
+Python
+from langchain_community.embeddings import OllamaEmbeddings
+
+with:
+
+Python
+from langchain_ollama import OllamaEmbeddings
+Fix 3: Use an embedding model
+
+Replace:
+
+Python
+embeddings = OllamaEmbeddings(model="llama3.2:1b")
+
+with:
+
+Python
+embeddings = OllamaEmbeddings(
+model="nomic-embed-text"
+)
+Fix 4: Pull the embedding model
+
+Exit nano, then run:
+
+Shell
+ollama pull nomic-embed-text
+
+Verify:
+
+Shell
+ollama list
+
+You should see something like:
+
+Plain Text
+llama3.2:1b
+nomic-embed-text
+
+
+================
+
+
+Final ingest.py
+
+from pathlib import Path
+from langchain_ollama import OllamaEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import TextLoader
+
+BASE = Path(__file__).resolve().parent.parent
+DOCS = BASE / "documents"
+DB_DIR = str(BASE / "chroma_db_storage")
+
+def main():
+    files = [DOCS / "doc1_cibil_rule.txt",
+             DOCS / "doc2_loan_policy.txt"]
+
+    docs = []
+
+    for f in files:
+        docs.extend(TextLoader(str(f), encoding="utf-8").load())
+
+    chunks = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=50
+    ).split_documents(docs)
+
+    embeddings = OllamaEmbeddings(
+        model="nomic-embed-text"
+    )
+
+    Chroma.from_documents(
+        chunks,
+        embeddings,
+        persist_directory=DB_DIR
+    )
+
+    print(f"Ingested {len(chunks)} chunks into {DB_DIR}")
+
+if __name__ == "__main__":
+    main()
+
+
+============
+
+
+Then run
+Shell
+python -m chroma_db_code.ingest
+
+If it still fails, run:
+
+Shell
+ollama list
+
+and send the output. That will tell us whether nomic-embed-text was downloaded successfully.
