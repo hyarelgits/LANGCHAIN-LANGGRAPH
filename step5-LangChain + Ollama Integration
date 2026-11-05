@@ -1,0 +1,268 @@
+Phase 3: LangChain + Ollama Integration
+
+You have completed:
+
+Plain Text
+Phase 1: Documents ✅
+Phase 2: ChromaDB Ingestion ✅
+Phase 3: LangChain + Ollama ← NOW
+Goal
+
+Before:
+
+Plain Text
+User Question
+│
+▼
+ChromaDB
+│
+▼
+Document Text
+
+Output:
+
+Plain Text
+Minimum CIBIL score is 750.
+
+After Phase 3:
+
+Plain Text
+User Question
+│
+▼
+ChromaDB
+│
+▼
+Relevant Context
+│
+▼
+Llama 3.2
+│
+▼
+Human-Friendly Answer
+
+Output:
+
+Plain Text
+According to the loan policy,
+the minimum CIBIL score required
+for loan approval is 750.
+
+
+==============
+
+
+
+Create query_llm.py
+Shell
+nano chroma_db_code/query_llm.py
+
+
+from pathlib import Path
+
+from langchain_ollama import ChatOllama
+from langchain_ollama import OllamaEmbeddings
+
+from langchain_community.vectorstores import Chroma
+
+BASE = Path(__file__).resolve().parent.parent
+DB_DIR = str(BASE / "chroma_db_storage")
+
+embeddings = OllamaEmbeddings(
+    model="nomic-embed-text"
+)
+
+db = Chroma(
+    persist_directory=DB_DIR,
+    embedding_function=embeddings
+)
+
+llm = ChatOllama(
+    model="llama3.2:1b"
+)
+
+question = input("Ask Question: ")
+
+docs = db.similarity_search(
+    question,
+    k=2
+)
+
+context = "\n".join(
+    [doc.page_content for doc in docs]
+)
+
+prompt = f"""
+You are a loan assistant.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer based only on the context.
+"""
+
+response = llm.invoke(prompt)
+
+print("\nANSWER:\n")
+print(response.content)
+
+
+
+=============
+
+
+print(response.content)
+
+Save:
+
+Plain Text
+CTRL + O
+ENTER
+CTRL + X
+
+===========
+
+
+Run
+
+Go to project root:
+
+Shell
+cd /root/my-loan-project
+
+Execute:
+
+Shell
+python -m chroma_db_code.query_llm
+Example
+
+User:
+
+Plain Text
+What is minimum CIBIL score?
+
+Backend:
+
+Plain Text
+Question
+│
+▼
+Embedding
+│
+▼
+Chroma Search
+│
+▼
+Relevant Documents
+│
+▼
+Llama 3.2
+│
+▼
+Formatted Answer
+
+Result:
+
+Plain Text
+According to the provided loan policy,
+the minimum CIBIL score required is 750.
+What LangChain Is Doing Here
+
+Without LangChain:
+
+Plain Text
+You manually call Ollama
+You manually call ChromaDB
+You manually build prompts
+You manually manage formats
+
+With LangChain:
+
+Plain Text
+Question
+│
+▼
+Retriever
+│
+▼
+Prompt
+│
+▼
+LLM
+│
+▼
+Response
+
+LangChain is the glue connecting everything.
+
+Architecture After Phase 3
+Plain Text
+Loan Documents
+│
+▼
+ChromaDB
+│
+▼
+Retriever
+│
+▼
+LangChain
+│
+▼
+Ollama (Llama3.2)
+│
+▼
+Answer
+Verify Everything
+
+Check model:
+
+Shell
+ollama list
+
+Check DB:
+
+Shell
+ls chroma_db_storage
+
+Run chatbot:
+
+Shell
+python -m chroma_db_code.query_llm
+
+Ask:
+
+Plain Text
+What is minimum CIBIL score?
+What is loan policy?
+Who is eligible for loan?
+After Phase 3
+
+Next phases:
+
+Plain Text
+Phase 1 Documents ✅
+Phase 2 ChromaDB ✅
+Phase 3 LangChain + Ollama ✅
+Phase 4 LangGraph ← Next
+Phase 5 FastAPI
+Phase 6 MCP
+Phase 7 UI
+Phase 8 Docker
+Phase 9 Deployment
+
+Phase 4 (LangGraph) is where your app becomes intelligent and can decide:
+
+Plain Text
+Search documents?
+OR
+Call database?
+OR
+Use tool?
+OR
+Answer directly?
+
+That is the next major step after query_llm.py works successfully. 🚀
