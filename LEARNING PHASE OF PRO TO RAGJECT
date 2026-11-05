@@ -1,0 +1,652 @@
+This is actually a very good project page because it explains concepts using simple examples. Let me explain what you're seeing in a kid-friendly way.
+
+Section 1: Goal of the Project
+
+The page says:
+
+A bank user asks a loan question. The system finds the rule, checks the data, and gives a clear answer.
+
+Imagine:
+
+Plain Text
+Customer:
+Can I get a home loan?
+ 
+AI:
+Let me check the rules...
+Let me check your data...
+Here is the answer.
+
+That's the entire project in one sentence.
+
+Section 2: RAG vs LangChain vs LangGraph vs MCP
+
+Many beginners think these are the same thing.
+
+They are not.
+
+Think of building a house.
+
+Plain Text
+RAG = Library
+LangChain = Builder
+LangGraph = Manager
+MCP = Plug Adapter
+1. RAG
+
+The page says:
+
+Plain Text
+Search then answer
+Example
+
+Question:
+
+Plain Text
+What is minimum CIBIL score?
+
+RAG does:
+
+Plain Text
+Search documents
+↓
+Find rule
+↓
+Answer
+
+Like a librarian.
+
+Plain Text
+You ask
+↓
+Librarian finds book
+↓
+Reads page
+↓
+Answers
+
+RAG = Search first, answer later.
+
+2. LangChain
+
+The page says:
+
+Plain Text
+Framework / Library
+
+Think:
+
+Plain Text
+Python code helper
+
+Without LangChain:
+
+Plain Text
+Write Ollama code
+Write ChromaDB code
+Write Prompt code
+Write Search code
+
+Lots of work.
+
+LangChain connects everything:
+
+Plain Text
+Question
+↓
+Vector DB
+↓
+LLM
+↓
+Answer
+
+It is the glue.
+
+3. LangGraph
+
+The page says:
+
+Plain Text
+Branches
+Loops
+State
+Memory
+
+This is like a traffic police officer.
+
+Example:
+
+Plain Text
+Question arrives
+↓
+Document found?
+/ \
+Yes No
+/ \
+Answer Search Web
+
+LangGraph decides:
+
+Plain Text
+What happens next?
+
+Think:
+
+Plain Text
+Workflow Manager
+4. MCP
+
+The page says:
+
+Plain Text
+Universal USB Port for AI
+
+This is actually a great explanation.
+
+Imagine:
+
+Plain Text
+Keyboard
+Mouse
+Printer
+Camera
+
+All connect using USB.
+
+Similarly:
+
+Plain Text
+LLM
+↓
+MCP
+↓
+GitHub
+Database
+Email
+Jira
+PostgreSQL
+
+MCP gives a standard connection.
+
+Section 3: LLM vs RAG
+
+Your screenshot shows:
+
+Plain Text
+LLM = Brain / Student
+RAG = Eyes / Librarian
+
+This is the easiest explanation.
+
+LLM Alone
+
+Example:
+
+Plain Text
+What is my company's loan policy?
+
+LLM says:
+
+Plain Text
+I don't know.
+
+Because:
+
+Plain Text
+Policy is not in training data.
+RAG
+
+RAG does:
+
+Plain Text
+Find document
+↓
+Give document to LLM
+↓
+LLM answers
+
+Now answer becomes:
+
+Plain Text
+According to your policy...
+
+Much better.
+
+How Your Current Project Fits
+
+You already built:
+
+Plain Text
+Loan Documents
+↓
+Embeddings
+↓
+ChromaDB
+
+That is:
+
+Plain Text
+RAG Storage Layer ✅
+
+When you ran:
+
+Shell
+python -m chroma_db_code.ingest
+
+You completed:
+
+Plain Text
+RAG Knowledge Base ✅
+What Happens Next?
+
+Current:
+
+Plain Text
+documents
+↓
+ChromaDB
+
+Next:
+
+Plain Text
+Question
+↓
+Query ChromaDB
+↓
+Get Context
+↓
+Send to Llama
+↓
+Answer
+Final Architecture
+
+This is what your complete loan project will look like:
+
+Plain Text
+User
+│
+▼
+Flask UI
+│
+▼
+LangChain
+│
+├── ChromaDB
+│ │
+│ ▼
+│ Documents
+│
+▼
+Ollama (Llama 3.2)
+│
+▼
+Answer
+In One Simple Story
+
+Imagine a student in school:
+
+Without RAG
+Plain Text
+Teacher:
+What's the loan rule?
+ 
+Student:
+I don't remember.
+With RAG
+Plain Text
+Teacher:
+What's the loan rule?
+ 
+Student:
+Let me check the book.
+ 
+(found page)
+ 
+Answer:
+The minimum CIBIL score is 750.
+
+In this story:
+
+Plain Text
+Student = LLM
+Book = Documents
+Library = ChromaDB
+Finding Page = RAG
+LangChain = Glue connecting everything
+LangGraph = Workflow manager
+MCP = Standard connector to external tools
+
+And the command you successfully executed:
+
+Shell
+python -m chroma_db_code.ingest
+
+means:
+
+"Read the loan books, convert them into AI-searchable knowledge, and store them in the ChromaDB library so the chatbot can find answers later." ✅
+
+i need to use RAG ,LANGGRAPH,LANGCHAIN,MCP,FASTAPI
+
+Yes. In fact, a modern AI application should use these technologies together because each solves a different problem.
+
+What Each Technology Does
+Technology	Purpose	Think LikeRAG	Finds information from documents	Librarian
+LangChain	Connects components together	Electric wiring
+LangGraph	Controls decision-making flow	Traffic police
+MCP	Connects AI to external tools	USB port
+FastAPI	Exposes APIs for UI and applications	Reception desk
+Recommended Architecture for Your Loan Assistant
+Plain Text
+USER
+│
+▼
+┌─────────────┐
+│ FastAPI │
+└──────┬──────┘
+│
+▼
+┌─────────────┐
+│ LangGraph │
+│ Orchestrator│
+└──────┬──────┘
+│
+┌───────────────┼────────────────┐
+│ │ │
+▼ ▼ ▼
+ 
+RAG Search MCP Tools Business Rules
+(ChromaDB) (Postgres, (Eligibility,
+GitHub, etc.) Validation)
+ 
+│
+▼
+LangChain
+│
+▼
+Ollama
+(Llama 3.2)
+│
+▼
+Answer
+How a Loan Question Flows
+
+Customer asks:
+
+Plain Text
+Can customer Ravi get a loan?
+CIBIL = 760
+Income = 50,000
+Step 1 FastAPI
+
+Receives request:
+
+HTTP
+POST /ask
+Step 2 LangGraph
+
+Decides:
+
+Plain Text
+Need policy?
+YES
+ 
+Need customer data?
+YES
+ 
+Need calculation?
+YES
+Step 3 RAG
+
+Searches ChromaDB
+
+Finds:
+
+Plain Text
+Minimum CIBIL Score = 750
+Step 4 MCP
+
+Calls:
+
+Plain Text
+PostgreSQL
+Customer Database
+
+Gets:
+
+Plain Text
+Customer CIBIL = 760
+Step 5 LangChain
+
+Creates prompt:
+
+Plain Text
+Policy:
+Minimum score is 750
+ 
+Customer:
+Score is 760
+ 
+Question:
+Eligible?
+Step 6 Ollama
+
+Generates:
+
+Plain Text
+Customer is eligible because
+CIBIL score exceeds minimum requirement.
+Project Structure
+Plain Text
+loan-ai-assistant/
+ 
+│
+├── app/
+│ ├── main.py
+│ ├── routes/
+│ ├── graph/
+│ ├── rag/
+│ ├── tools/
+│ └── models/
+│
+├── chroma_db_storage/
+│
+├── documents/
+│ ├── loan_policy.txt
+│ └── cibil_rules.txt
+│
+├── chroma_db_code/
+│ ├── ingest.py
+│ └── query.py
+│
+├── requirements.txt
+│
+└── docker-compose.yml
+Learning Order
+
+Since you've already completed ingestion, follow this order:
+
+Phase 1 ✅
+Plain Text
+Ollama
+Embeddings
+ChromaDB
+Ingestion
+
+Completed.
+
+Phase 2
+
+Build query system
+
+Python
+question
+↓
+Chroma Search
+↓
+return chunks
+
+Files:
+
+Plain Text
+query.py
+Phase 3
+
+Add LangChain
+
+Plain Text
+Question
+↓
+Retrieve Chunks
+↓
+Prompt Template
+↓
+LLM
+↓
+Answer
+Phase 4
+
+Add LangGraph
+
+Create nodes:
+
+Plain Text
+START
+ 
+↓
+ 
+Retrieve Node
+ 
+↓
+ 
+Decision Node
+ 
+↓
+ 
+Tool Node
+ 
+↓
+ 
+Answer Node
+ 
+↓
+ 
+END
+Phase 5
+
+Add MCP
+
+Connect:
+
+Plain Text
+PostgreSQL
+GitHub
+Jira
+Email
+Redis
+
+Example:
+
+Plain Text
+Loan Policy Search
+Customer Record Lookup
+Phase 6
+
+Add FastAPI
+
+Endpoints:
+
+Python
+POST /ask
+ 
+POST /ingest
+ 
+GET /health
+ 
+GET /docs
+
+Start:
+
+Shell
+uvicorn app.main:app --reload
+
+Swagger:
+
+Plain Text
+http://localhost:8000/docs
+What Companies Actually Use
+
+A very common production stack today is:
+
+Plain Text
+Frontend (React)
+ 
+│
+ 
+▼
+ 
+FastAPI
+ 
+│
+ 
+▼
+ 
+LangGraph
+ 
+│
+ 
+▼
+ 
+LangChain
+ 
+│
+ 
+▼
+ 
+RAG (ChromaDB/Pinecone)
+ 
+│
+ 
+▼
+ 
+LLM (OpenAI/Ollama/Llama)
+ 
+│
+ 
+▼
+ 
+MCP Tools
+(Postgres, GitHub, Jira, Slack)
+Your Immediate Next Steps
+
+Because you've completed ingestion:
+
+Plain Text
+1. Build query.py
+2. Verify retrieval works
+3. Connect LangChain + Ollama
+4. Build LangGraph workflow
+5. Create FastAPI endpoints
+6. Add MCP tools
+7. Build UI
+8. Dockerize project
+
+For your learning journey, the best sequence is:
+
+Plain Text
+RAG ✅
+LangChain ← NEXT
+LangGraph
+FastAPI
+MCP
+Docker
+Deployment
+
+Don't jump directly to MCP yet. First make:
+
+Plain Text
+Question
+→ ChromaDB
+→ Llama
+→ Answer
+
+work successfully. Then add LangGraph and MCP on top of that foundation.
