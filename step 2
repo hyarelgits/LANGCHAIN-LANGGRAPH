@@ -1,0 +1,150 @@
+Excellent! 🎉 You have completed the Ingestion Phase.
+
+Current status:
+
+Plain Text
+Loan Documents ✅
+Ollama ✅
+Embedding Model ✅
+ChromaDB ✅
+Vector Database ✅
+Ingestion ✅
+What should happen next?
+
+Now we need to ask questions to the vector database.
+
+Flow:
+
+Plain Text
+User Question
+│
+▼
+Convert to Embedding
+│
+▼
+Search ChromaDB
+│
+▼
+Retrieve Relevant Chunks
+│
+▼
+Send Context to Llama
+│
+▼
+Generate Answer
+Step 1: Check Your Project Files
+
+Run:
+
+Shell
+ls chroma_db_code
+
+You should see something like:
+
+Plain Text
+__init__.py
+ingest.py
+query.py
+Step 2: If query.py Exists
+
+Show me:
+
+Shell
+cat chroma_db_code/query.py
+
+or
+
+Shell
+nano chroma_db_code/query.py
+
+and share the contents.
+
+
+=======================
+
+Step 3: What query.py Usually Does
+
+
+from langchain_community.vectorstores import Chroma
+from langchain_ollama import OllamaEmbeddings
+
+embeddings = OllamaEmbeddings(
+    model="nomic-embed-text"
+)
+
+db = Chroma(
+    persist_directory="chroma_db_storage",
+    embedding_function=embeddings
+)
+
+results = db.similarity_search(
+    "What is minimum CIBIL score?"
+)
+
+for r in results:
+    print(r.page_content)
+
+
+
+    ==========
+
+
+Kid Explanation
+
+Imagine:
+
+You have built a library.
+
+Plain Text
+Books ✅
+Shelves ✅
+Index ✅
+
+Now you ask:
+
+Plain Text
+Where is the CIBIL rule?
+
+The librarian (ChromaDB) searches the index and says:
+
+Plain Text
+Shelf 3
+Book 2
+Page 10
+
+That's what query.py does.
+
+After Query Phase
+
+Next we connect:
+
+Plain Text
+ChromaDB
++
+Llama3.2
+
+Then:
+
+Plain Text
+User: Can I get a loan with 700 CIBIL?
+ 
+AI:
+According to the policy document...
+
+Now the AI becomes a real Loan Assistant.
+
+Your Immediate Next Command
+
+Run:
+
+Shell
+ls chroma_db_code
+
+and send the output.
+
+Then I'll explain the next file and what happens in the backend step-by-step like we just did for ingest.py. 🚀
+
+
+====
+    
+
