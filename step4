@@ -1,0 +1,144 @@
+Great progress! 🎉
+
+You have completed the Knowledge Loading (Ingestion) phase.
+
+Plain Text
+Phase 1 ✅ Documents Created
+Phase 2 ✅ Ollama Installed
+Phase 3 ✅ ChromaDB Installed
+Phase 4 ✅ Documents Converted to Embeddings
+Phase 5 ✅ Data Stored in ChromaDB
+ 
+
+Now comes the exciting part:
+
+Next Step: Build Query.py
+
+Purpose:
+
+Plain Text
+User asks question
+↓
+Search ChromaDB
+↓
+Find matching document content
+↓
+Show result
+
+Create file:
+
+Shell
+nano chroma_db_code/query.py
+
+
+from pathlib import Path
+from langchain_ollama import OllamaEmbeddings
+from langchain_community.vectorstores import Chroma
+
+BASE = Path(__file__).resolve().parent.parent
+DB_DIR = str(BASE / "chroma_db_storage")
+
+embeddings = OllamaEmbeddings(
+    model="nomic-embed-text"
+)
+
+db = Chroma(
+    persist_directory=DB_DIR,
+    embedding_function=embeddings
+)
+
+question = input("Ask a question: ")
+
+results = db.similarity_search(
+    question,
+    k=2
+)
+
+print("\nResults:\n")
+
+for doc in results:
+    print(doc.page_content)
+    print("-" * 50)
+
+    ==================
+
+
+
+    Save:
+
+Plain Text
+CTRL + O
+ENTER
+CTRL + X
+Run It
+
+From project root:
+
+Shell
+cd /root/my-loan-project
+ 
+python -m chroma_db_code.query
+
+Example:
+
+Plain Text
+Ask a question:
+What is minimum CIBIL score?
+
+Output:
+
+Plain Text
+Minimum CIBIL score should be 750.
+What Happens Internally?
+Plain Text
+Question
+│
+▼
+Create Embedding
+│
+▼
+Search ChromaDB
+│
+▼
+Find Best Chunk
+│
+▼
+Display Result
+
+At this stage:
+
+Plain Text
+AI is NOT answering.
+AI is only finding relevant text.
+After Query.py Works
+
+Next phase will be:
+
+Plain Text
+Query
+│
+▼
+ChromaDB Search
+│
+▼
+Relevant Context
+│
+▼
+Llama 3.2
+│
+▼
+Natural Language Answer
+
+That phase turns your project into a real Loan Policy Chatbot (RAG Application).
+
+Your next command:
+Shell
+nano chroma_db_code/query.py
+
+Create the file, run it, and test with:
+
+Plain Text
+What is minimum CIBIL score?
+
+Then share the output, and we'll connect it to Llama 3.2 so the chatbot can generate answers instead of just showing document text. 🚀
+    
