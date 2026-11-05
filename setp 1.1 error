@@ -113,3 +113,24 @@ Shell
 ollama list
 
 and send the output. That will tell us whether nomic-embed-text was downloaded successfully.
+
+
+============
+
+
+✅ Success! Your ingestion worked.
+
+The important line is:
+
+Plain Text
+Ingested 2 chunks into /root/my-loan-project/chroma_db_storage
+
+This means:
+
+✅ Documents loaded successfully
+✅ Text split into chunks
+✅ Embeddings generated successfully
+✅ ChromaDB vector store created
+✅ Data saved in chroma_db_storage
+
+Your RAG ingestion pipeline is now working.
