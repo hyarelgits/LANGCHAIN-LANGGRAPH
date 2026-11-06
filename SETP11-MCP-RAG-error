@@ -1,0 +1,134 @@
+In graph_rag.py
+
+def rag_node(state):
+
+    print("******** RAG NODE EXECUTED ********")
+
+    docs = db.similarity_search(
+        state["question"],
+        k=2
+    )
+
+    context = "\n\n".join(
+        [doc.page_content for doc in docs]
+    )
+
+    print("CONTEXT FOUND:")
+    print(context)
+
+    prompt = f"""
+Use ONLY information from context.
+
+Context:
+{context}
+
+Question:
+{state["question"]}
+"""
+
+    response = llm.invoke(prompt)
+
+    return {
+        "context": context,
+        "answer": response.content
+    }
+
+
+
+
+===========
+
+
+Test Again
+
+Ask:
+
+Plain Text
+What is minimum CIBIL score?
+
+Look at the terminal.
+
+You should see:
+
+Plain Text
+******** RAG NODE EXECUTED ********
+ 
+CONTEXT FOUND:
+...
+========
+
+If Context Is Empty
+
+Then ChromaDB retrieval is failing.
+
+Verify database contents:
+
+Shell
+ls -la chroma_db_storage
+ 
+
+You should see Chroma files.
+
+
+Test ChromaDB Directly
+
+Run:
+
+Shell
+python
+
+
+
+from pathlib import Path
+from langchain_ollama import OllamaEmbeddings
+from langchain_community.vectorstores import Chroma
+
+BASE = Path("/root/my-loan-project")
+DB_DIR = str(BASE / "chroma_db_storage")
+
+db = Chroma(
+    persist_directory=DB_DIR,
+    embedding_function=OllamaEmbeddings(
+        model="nomic-embed-text"
+    )
+)
+
+docs = db.similarity_search(
+    "What is minimum CIBIL score?",
+    k=2
+)
+
+for d in docs:
+    print(d.page_content)
+
+
+
+=======
+
+
+If you don't see your loan-policy text, re-run ingestion:
+
+Shell
+python -m chroma_db_code.ingest
+Test the MCP Route
+
+Now test:
+
+Plain Text
+Show customer details
+
+If PostgreSQL MCP is configured correctly, terminal should display:
+
+Plain Text
+******** MCP NODE EXECUTED ********
+
+and the response should contain:
+
+Plain Text
+Ravi
+760
+50000
+Home Loan
+ 
+
+from PostgreSQL.
