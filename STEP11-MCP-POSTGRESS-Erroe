@@ -1,0 +1,37 @@
+python -c "from chroma_db_code.graph_rag import graph; print('OK')"
+uvicorn app:app --reload --host 0.0.0.0 --port 8000 > error.log 2>&1
+Verify PostgreSQL library:
+
+Shell
+pip show psycopg2-binary
+
+If not installed:
+
+Shell
+pip install psycopg2-binary
+ 
+
+Verify tool file exists:
+
+Shell
+ls chroma_db_code
+
+Expected:
+
+Plain Text
+db_tools.py
+graph_rag.py
+
+Verify import:
+
+Shell
+python -c "from chroma_db_code.db_tools import get_customer; print('OK')"
+ 
+Most useful command right now
+
+Run exactly:
+
+Shell
+python -c "from chroma_db_code.graph_rag import graph; print('OK')"
+
+and send the complete output. That command will immediately reveal the actual PostgreSQL/MCP integration error.
