@@ -132,3 +132,67 @@ Home Loan
  
 
 from PostgreSQL.
+
+
+
+==========================================
+
+
+
+Run:
+Shell
+python -m py_compile chroma_db_code/graph_rag.py
+
+If there is a syntax or indentation problem, Python will show:
+
+Plain Text
+File "...graph_rag.py", line XX
+SyntaxError ...
+
+or
+
+Plain Text
+IndentationError ...
+Also show lines around the problematic section:
+Shell
+nl -ba chroma_db_code/graph_rag.py | sed -n '40,120p'
+
+This will print line numbers 40-120.
+
+Another quick test
+
+Run:
+
+Shell
+python -c "from chroma_db_code.graph_rag import graph; print('OK')"
+
+If that prints:
+
+Plain Text
+OK
+
+then the problem is not in graph_rag.py, but somewhere else during FastAPI startup.
+
+Most likely issue
+
+I noticed you edited rag_node() and mcp_node() manually. Common errors are:
+
+Python
+prompt = f"""
+...
+"""
+ 
+
+not being closed properly, or
+
+Python
+return {
+
+missing a closing }.
+
+Please run and paste the output of:
+
+Shell
+python -m py_compile chroma_db_code/graph_rag.py
+
+That will pinpoint the exact line causing the startup failure.
