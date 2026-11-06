@@ -1,0 +1,333 @@
+Yes. For your project, the best approach is to add a simulated MCP node first (customer lookup tool), then later replace it with a real PostgreSQL/GitHub/Jira MCP server.
+
+File Path
+Plain Text
+/root/my-loan-project/chroma_db_code/graph_rag.py
+
+Replace the entire file with the code below.
+
+graph_rag.py
+
+from pathlib import Path
+from typing import TypedDict
+
+from langgraph.graph import StateGraph, END
+
+from langchain_ollama import ChatOllama
+from langchain_ollama import OllamaEmbeddings
+from langchain_community.vectorstores import Chroma
+
+
+# ======================================================
+# PATHS
+# ======================================================
+
+BASE = Path(__file__).resolve().parent.parent
+DB_DIR = str(BASE / "chroma_db_storage")
+
+# ======================================================
+# EMBEDDINGS
+# ======================================================
+
+embeddings = OllamaEmbeddings(
+    model="nomic-embed-text"
+)
+
+# ======================================================
+# CHROMADB
+# ======================================================
+
+db = Chroma(
+    persist_directory=DB_DIR,
+    embedding_function=embeddings
+)
+
+# ======================================================
+# LLM
+# ======================================================
+
+llm = ChatOllama(
+    model="llama3.2:1b"
+)
+
+# ======================================================
+# STATE
+# ======================================================
+
+class State(TypedDict):
+    question: str
+    route: str
+    context: str
+    answer: str
+
+# ======================================================
+# MCP TOOL
+# ======================================================
+
+def get_customer_data(customer_id: str):
+
+    customers = {
+        "1001": {
+            "name": "Ravi",
+            "cibil": 760,
+            "loan_type": "Home Loan",
+            "income": 50000
+        },
+        "1002": {
+            "name": "Amit",
+            "cibil": 680,
+            "loan_type": "Personal Loan",
+            "income": 30000
+        }
+    }
+
+    return customers.get(customer_id)
+
+# ======================================================
+# ROUTER
+# ======================================================
+
+def router(state):
+
+    q = state["question"].lower()
+
+    if "customer" in q:
+        return {"route": "mcp"}
+
+    if (
+        "loan" in q
+        or "cibil" in q
+        or "policy" in q
+        or "eligibility" in q
+    ):
+        return {"route": "rag"}
+
+    return {"route": "direct"}
+
+# ======================================================
+# RAG NODE
+# ======================================================
+
+def rag_node(state):
+
+    docs = db.similarity_search(
+        state["question"],
+        k=2
+    )
+
+    context = "\n\n".join(
+        [doc.page_content for doc in docs]
+    )
+
+    prompt = f"""
+You are a Loan Policy Assistant.
+
+Use ONLY provided context.
+
+Context:
+{context}
+
+Question:
+{state["question"]}
+"""
+
+    response = llm.invoke(prompt)
+
+    return {
+        "context": context,
+        "answer": response.content
+    }
+
+# ======================================================
+# MCP NODE
+# ======================================================
+
+def mcp_node(state):
+
+    customer = get_customer_data("1001")
+
+    prompt = f"""
+Customer Details
+
+Name: {customer['name']}
+CIBIL Score: {customer['cibil']}
+Income: {customer['income']}
+Loan Type: {customer['loan_type']}
+
+Answer the user question:
+
+{state["question"]}
+"""
+
+    response = llm.invoke(prompt)
+
+    return {
+        "answer": response.content
+    }
+
+# ======================================================
+# DIRECT NODE
+# ======================================================
+
+def direct_node(state):
+
+    response = llm.invoke(
+        state["question"]
+    )
+
+    return {
+        "answer": response.content
+    }
+
+# ======================================================
+# ROUTE DECISION
+# ======================================================
+
+def choose_route(state):
+    return state["route"]
+
+# ======================================================
+# BUILD GRAPH
+# ======================================================
+
+builder = StateGraph(State)
+
+builder.add_node(
+    "router",
+    router
+)
+
+builder.add_node(
+    "rag",
+    rag_node
+)
+
+builder.add_node(
+    "mcp",
+    mcp_node
+)
+
+builder.add_node(
+    "direct",
+    direct_node
+)
+
+builder.set_entry_point(
+    "router"
+)
+
+builder.add_conditional_edges(
+    "router",
+    choose_route,
+    {
+        "rag": "rag",
+        "mcp": "mcp",
+        "direct": "direct"
+    }
+)
+
+builder.add_edge("rag", END)
+builder.add_edge("mcp", END)
+builder.add_edge("direct", END)
+
+graph = builder.compile()
+
+
+====================
+
+
+app.py
+
+Keep your current app.py.
+
+Path:
+
+Plain Text
+/root/my-loan-project/app.py
+
+
+===================
+
+
+Restart
+Shell
+CTRL+C
+ 
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+
+
+=============
+
+
+Test RAG Route
+
+Swagger:
+
+Plain Text
+What is minimum CIBIL score?
+
+Flow:
+
+Plain Text
+Router
+↓
+RAG
+↓
+ChromaDB
+↓
+Answer
+Test MCP Route
+
+Swagger:
+
+Plain Text
+Show customer details
+
+Flow:
+
+Plain Text
+Router
+↓
+MCP
+↓
+get_customer_data()
+↓
+Ollama
+↓
+Answer
+
+Expected response similar to:
+
+JSON
+{
+"question": "Show customer details",
+"answer": "Customer Ravi has a CIBIL score of 760, income of 50000 and is applying for a Home Loan."
+}
+This Gives You
+Plain Text
+FastAPI ✅
+LangChain ✅
+LangGraph ✅
+RAG ✅
+ChromaDB ✅
+Ollama ✅
+MCP Node ✅
+
+Next upgrade would be replacing:
+
+Python
+get_customer_data()
+
+with real:
+
+Plain Text
+PostgreSQL
+MySQL
+GitHub MCP Server
+Filesystem MCP Server
+REST API MCP Server
+
+so your MCP node becomes a genuine enterprise tool integration.
+
+
+
