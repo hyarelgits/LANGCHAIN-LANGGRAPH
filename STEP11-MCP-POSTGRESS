@@ -1,0 +1,265 @@
+Perfect. Now let's replace the fake MCP customer data with a real PostgreSQL database.
+
+Step 1: Install PostgreSQL Driver
+
+Activate venv:
+
+Shell
+source venv/bin/activate
+
+Install:
+
+Shell
+pip install psycopg2-binary
+
+Verify:
+
+Shell
+pip show psycopg2-binary
+
+
+Step 2: Create Database
+
+Login:
+
+Shell
+sudo -u postgres psql
+
+Create database:
+
+SQL
+CREATE DATABASE loandb;
+
+Connect:
+
+SQL
+\c loandb
+
+
+
+===============
+
+
+Step 3: Create Customer Table
+SQL
+CREATE TABLE customers (
+customer_id VARCHAR(10) PRIMARY KEY,
+customer_name VARCHAR(100),
+cibil_score INTEGER,
+income INTEGER,
+loan_type VARCHAR(50)
+);
+
+========
+
+
+Step 4: Insert Sample Records
+
+
+INSERT INTO customers VALUES
+('1001','Ravi',760,50000,'Home Loan');
+
+INSERT INTO customers VALUES
+('1002','Amit',680,30000,'Personal Loan');
+
+INSERT INTO customers VALUES
+('1003','Priya',810,75000,'Car Loan');
+
+==========
+
+
+Verify:
+
+SQL
+SELECT * FROM customers;
+
+Exit:
+
+SQL
+\q
+
+
+======
+
+
+Step 5: Create PostgreSQL Tool
+File
+Plain Text
+/root/my-loan-project/chroma_db_code/db_tools.py
+
+
+import psycopg2
+
+
+def get_customer(customer_id):
+
+    conn = psycopg2.connect(
+        host="localhost",
+        database="loandb",
+        user="postgres",
+        password="postgres"
+    )
+
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT
+            customer_name,
+            cibil_score,
+            income,
+            loan_type
+        FROM customers
+        WHERE customer_id=%s
+        """,
+        (customer_id,)
+    )
+
+    result = cur.fetchone()
+
+    conn.close()
+
+    return result
+
+
+=================
+
+
+Step 6: Update graph_rag.py
+
+Add import near the top:
+
+
+Python
+from chroma_db_code.db_tools import get_customer
+
+
+=============
+
+
+Replace the MCP node with:
+
+
+def mcp_node(state):
+
+    customer = get_customer("1001")
+
+    if not customer:
+        return {
+            "answer": "Customer not found"
+        }
+
+    prompt = f"""
+Customer Details
+
+Name: {customer[0]}
+CIBIL Score: {customer[1]}
+Income: {customer[2]}
+Loan Type: {customer[3]}
+
+Answer the user question:
+{state['question']}
+"""
+
+    response = llm.invoke(prompt)
+
+    return {
+        "answer": response.content
+    }
+
+
+=============
+
+
+
+
+Step 7: Restart FastAPI
+Shell
+pkill -f uvicorn
+ 
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+
+
+==========
+
+
+Step 8: Test MCP Route
+
+Swagger:
+
+Plain Text
+Show customer details
+
+Flow:
+
+Plain Text
+FastAPI
+│
+▼
+LangGraph Router
+│
+▼
+MCP Node
+│
+▼
+PostgreSQL
+│
+▼
+Customer Record
+│
+▼
+Ollama
+│
+▼
+Answer
+
+Expected answer:
+
+Plain Text
+Customer Ravi has a CIBIL score of 760,
+monthly income of 50000,
+and is applying for a Home Loan.
+Final Architecture
+Plain Text
+User
+│
+▼
+FastAPI
+│
+▼
+LangGraph
+│
+├── RAG Node
+│ │
+│ ▼
+│ ChromaDB
+│
+├── MCP Node
+│ │
+│ ▼
+│ PostgreSQL
+│
+└── Direct Node
+│
+▼
+Ollama
+│
+▼
+Answer
+
+After this, your project will demonstrate:
+
+Plain Text
+✅ FastAPI
+✅ LangChain
+✅ LangGraph
+✅ RAG
+✅ ChromaDB
+✅ Ollama
+✅ PostgreSQL
+✅ MCP-style Tool Integration
+
+which is a strong end-to-end GenAI enterprise architecture.
+
+
+
