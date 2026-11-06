@@ -1,0 +1,30 @@
+pkill -f uvicorn
+Find the PID using port 8000
+Shell
+lsof -i :8000
+
+Example output:
+
+Plain Text
+COMMAND PID USER
+uvicorn 229531 root
+
+Kill that PID:
+
+Shell
+kill -9 229531
+One-liner to kill whatever is using port 8000
+Shell
+fuser -k 8000/tcp
+Verify port 8000 is free
+Shell
+
+==========
+
+cd ~/my-loan-project
+
+source venv/bin/activate
+
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+
+lsof -i :8000
