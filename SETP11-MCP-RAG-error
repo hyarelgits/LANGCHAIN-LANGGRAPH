@@ -196,3 +196,38 @@ Shell
 python -m py_compile chroma_db_code/graph_rag.py
 
 That will pinpoint the exact line causing the startup failure.
+
+
+
+==================
+
+def mcp_node(state):
+
+    print("******** MCP NODE EXECUTED ********")
+
+    customer = get_customer("1001")
+
+    if not customer:
+        return {
+            "answer": "Customer not found"
+        }
+
+    prompt = f"""
+Customer Details
+
+Customer Name: {customer[0]}
+CIBIL Score: {customer[1]}
+Income: {customer[2]}
+Loan Type: {customer[3]}
+
+Answer the user question:
+
+{state["question"]}
+"""
+
+    response = llm.invoke(prompt)
+
+    return {
+        "answer": response.content
+    }
+
