@@ -427,3 +427,86 @@ builder.add_edge("mcp", END)
 builder.add_edge("direct", END)
 
 graph = builder.compile()
+
+
+
+
+============================
+
+
+
+
+Quick PostgreSQL Verification
+
+Run this command:
+
+Shell
+python -c "from chroma_db_code.db_tools import get_customer; print(get_customer('1001'))"
+
+Expected:
+
+Plain Text
+('Ravi', 760, 50000, 'Home Loan')
+
+If you get:
+
+Plain Text
+OperationalError
+
+then PostgreSQL connection details are wrong.
+
+If you get:
+
+Plain Text
+None
+
+then customer 1001 does not exist.
+
+Verify Database Data
+
+Run:
+
+Shell
+sudo -u postgres psql loandb
+
+Then:
+
+SQL
+SELECT * FROM customers;
+
+Expected:
+
+Plain Text
+1001 | Ravi | 760 | 50000 | Home Loan
+1002 | Amit | 680 | 30000 | Personal Loan
+1003 | Priya | 810 | 75000 | Car Loan
+
+Exit:
+
+SQL
+\q
+Most Common Cause
+
+In db_tools.py you probably have:
+
+Python
+conn = psycopg2.connect(
+host="localhost",
+database="loandb",
+user="postgres",
+password="postgres"
+)
+
+If the PostgreSQL user password isn't actually "postgres", you'll get:
+
+Plain Text
+psycopg2.OperationalError:
+password authentication failed
+Run These Two Commands
+Shell
+python -c "from chroma_db_code.db_tools import get_customer; print(get_customer('1001'))"
+
+and
+
+Shell
+sudo -u postgres psql loandb -c "SELECT * FROM customers;"
