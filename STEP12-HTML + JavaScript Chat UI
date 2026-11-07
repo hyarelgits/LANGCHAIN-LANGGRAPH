@@ -1,0 +1,345 @@
+HTML + JavaScript Chat UI
+
+Swagger UI
+   ↓
+FastAPI
+   ↓
+LangGraph
+   ↓
+Search / DB / Writer
+
+
+============
+
+
+New architecture:
+
+Browser Chat UI
+      │
+      ▼
+HTML + CSS + JavaScript
+      │
+      ▼
+FastAPI (/ask)
+      │
+      ▼
+LangGraph
+      │
+      ▼
+Answer
+
+=============
+
+
+
+
+Project Structure
+
+Create:
+
+my-loan-project/
+│
+├── app.py
+├── langgraph_flow.py
+├── templates/
+│   └── chat.html
+│
+└── static/
+    └── style.css
+
+
+===========
+
+
+Step 1: Install Jinja2
+Shell
+source venv/bin/activate
+ 
+pip install jinja2
+
+
+===============
+
+
+Verify:
+
+Shell
+pip show jinja2
+
+
+-==========
+
+
+
+Step 2: Update app.py
+
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
+
+from langgraph_flow import run_loan_flow
+
+app = FastAPI(
+    title="Loan Policy AI Assistant"
+)
+
+templates = Jinja2Templates(
+    directory="templates"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+
+    return templates.TemplateResponse(
+        "chat.html",
+        {"request": request}
+    )
+
+
+@app.get("/health")
+def health():
+
+    return {
+        "status": "UP"
+    }
+
+
+@app.get("/ask")
+def ask(question: str):
+
+    answer = run_loan_flow(question)
+
+    return {
+        "question": question,
+        "answer": answer
+    }
+
+
+
+===================
+
+
+Step 3: Create Chat UI
+
+File:
+
+Plain Text
+templates/chat.html
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Loan AI Assistant</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            background:#f5f5f5;
+        }
+
+        .container{
+            width:80%;
+            margin:auto;
+            margin-top:30px;
+        }
+
+        #chatBox{
+            background:white;
+            height:450px;
+            overflow:auto;
+            padding:15px;
+            border-radius:10px;
+            border:1px solid #ccc;
+        }
+
+        .user{
+            color:blue;
+            margin-top:10px;
+        }
+
+        .bot{
+            color:green;
+            margin-top:10px;
+        }
+
+        input{
+            width:80%;
+            padding:10px;
+        }
+
+        button{
+            padding:10px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Loan Policy AI Assistant</h2>
+
+    <div id="chatBox"></div>
+
+    <br>
+
+    <input
+        type="text"
+        id="question"
+        placeholder="Ask a question..."
+    >
+
+    <button onclick="sendQuestion()">
+        Send
+    </button>
+
+</div>
+
+<script>
+
+async function sendQuestion(){
+
+    let question =
+        document.getElementById(
+            "question"
+        ).value;
+
+    let chatBox =
+        document.getElementById(
+            "chatBox"
+        );
+
+    chatBox.innerHTML +=
+        `<div class="user">
+            <b>You:</b> ${question}
+        </div>`;
+
+    let response =
+        await fetch(
+            `/ask?question=${encodeURIComponent(question)}`
+        );
+
+    let data =
+        await response.json();
+
+    chatBox.innerHTML +=
+        `<div class="bot">
+            <b>AI:</b> ${data.answer}
+        </div>`;
+
+    chatBox.scrollTop =
+        chatBox.scrollHeight;
+}
+
+</script>
+
+</body>
+</html>
+
+
+
+================
+
+
+
+Step 4: Start Application
+Shell
+cd ~/my-loan-project
+ 
+uvicorn app:app \
+--reload \
+--host 0.0.0.0 \
+--port 8000
+
+
+
+
+==================
+
+
+Step 5: Open Browser
+Plain Text
+http://localhost:8000
+
+
+
+=============
+
+
+
+What You Learn In This Phase
+HTML
+
+CSS
+CSS
+container
+chatBox
+colors
+layout
+JavaScript
+JavaScript
+fetch()
+async
+await
+DOM manipulation
+
+
+FastAPI Frontend Integration
+Python
+TemplateResponse()
+ 
+HTMLResponse()
+ 
+Jinja2Templates()
+
+
+==================
+
+
+Interview Explanation
+
+I built a browser-based chat interface using HTML, CSS, JavaScript, and FastAPI. User queries are sent through JavaScript fetch() calls to the FastAPI /ask endpoint. The backend invokes the LangGraph workflow, which routes requests to Search, Database, or Writer agents. The response is returned as JSON and dynamically displayed in the chat window.
+
+
+
+==========
+
+
+After Chat UI
+
+Next recommended phases:
+
+Plain Text
+Phase 11 ✅ Chat Memory
+Phase 12 ✅ Multiple MCP Tools
+Phase 13 ✅ Authentication
+Phase 14 ✅ Logging
+Phase 15 ✅ Docker
+Phase 16 ✅ Azure Deployment
+Phase 17 ✅ CI/CD
+
+
+
+
+
+
+
+
+
+
