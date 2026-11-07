@@ -1,0 +1,182 @@
+PYTHON FOR GENAI PROJECTS - COMPLETE STUDY NOTES
+
+TOPIC 1: VARIABLES
+What: Store values in memory.
+Example:
+name = "Hyarel"
+score = 760
+
+TOPIC 2: DATA TYPES
+String:
+name = "Hyarel"
+Integer:
+age = 25
+Float:
+salary = 25000.50
+Boolean:
+eligible = True
+
+TOPIC 3: LISTS
+files = ["doc1.txt", "doc2.txt"]
+print(files[0])
+
+Project Example:
+files = [DOCS / "doc1.txt", DOCS / "doc2.txt"]
+
+TOPIC 4: DICTIONARIES
+customer = {
+  "name": "Ravi",
+  "cibil": 760
+}
+print(customer["name"])
+print(customer.get("cibil"))
+
+Project Example:
+state["question"]
+search_result["found"]
+db_result["cibil_score"]
+
+TOPIC 5: IF
+score = 760
+if score >= 720:
+    print("Eligible")
+
+TOPIC 6: IF ELSE
+if score >= 720:
+    print("Eligible")
+else:
+    print("Not Eligible")
+
+TOPIC 7: ELIF
+if score >= 720:
+    print("Eligible")
+elif score >= 690:
+    print("Conditional")
+else:
+    print("Rejected")
+
+TOPIC 8: COMPARISON OPERATORS
+==
+!=
+>
+<
+>=
+<=
+
+TOPIC 9: LOGICAL OPERATORS
+AND
+if score >= 690 and has_statement:
+
+OR
+if "loan" in q or "cibil" in q:
+
+TOPIC 10: LOOPS
+for i in range(5):
+    print(i)
+
+Project:
+for f in files:
+    pass
+
+TOPIC 11: FUNCTIONS
+def greet(name):
+    print(name)
+
+greet("Hyarel")
+
+Project Examples:
+router()
+search_node()
+db_node()
+writer_node()
+
+TOPIC 12: RETURN
+def add():
+    return 10
+
+value = add()
+
+TOPIC 13: IMPORTS
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+TOPIC 14: CLASSES
+class Student:
+    pass
+
+Project:
+class State(TypedDict)
+class LoanRequest(BaseModel)
+
+TOPIC 15: TYPEDDICT
+class State(TypedDict):
+    question: str
+    answer: str
+
+TOPIC 16: PYDANTIC BASEMODEL
+class LoanRequest(BaseModel):
+    question: str
+
+TOPIC 17: FILE HANDLING
+with open('test.txt','r') as f:
+    data = f.read()
+
+with open('test.txt','w') as f:
+    f.write('hello')
+
+TOPIC 18: JSON
+{
+   "question":"Loan?",
+   "answer":"Eligible"
+}
+
+TOPIC 19: EXCEPTION HANDLING
+try:
+    x = 10/0
+except Exception as e:
+    print(e)
+
+TOPIC 20: POSTGRESQL
+conn = psycopg2.connect(...)
+cur = conn.cursor()
+cur.execute('select * from customers')
+cur.fetchone()
+conn.close()
+
+TOPIC 21: FASTAPI
+@app.get('/')
+def home():
+    return {'status':'UP'}
+
+Run:
+uvicorn app:app --reload
+
+TOPIC 22: LANGGRAPH
+graph = StateGraph(State)
+graph.add_node()
+graph.add_edge()
+graph.compile()
+graph.invoke()
+
+TOPIC 23: RAG
+Documents -> Chunking -> Embeddings -> ChromaDB -> Retrieval -> LLM
+
+TOPIC 24: PROJECT FLOW
+User
+ ↓
+FastAPI
+ ↓
+LangGraph
+ ↓
+Search Node
+ ↓
+DB Node
+ ↓
+Writer Node
+ ↓
+Answer
+
+INTERVIEW SUMMARY
+Explain:
+FastAPI -> LangGraph -> Search -> DB -> Writer -> Response
+Explain ChromaDB, PostgreSQL, TypedDict, 
