@@ -1,0 +1,243 @@
+DOCKER AND DOCKER COMPOSE - COMPLETE HANDS-ON GUIDE
+
+PHASE 13: DOCKERIZATION
+=======================
+
+WHY DOCKER?
+-----------
+Current Method:
+source venv/bin/activate
+uvicorn app:app --reload
+
+Problems:
+- Python must be installed.
+- Packages must be installed manually.
+- Configuration differs across machines.
+
+Docker Solution:
+- Package application and dependencies together.
+- Run consistently anywhere.
+
+PROJECT STRUCTURE
+=================
+my-loan-project/
+│
+├── app.py
+├── langgraph_flow.py
+├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
+├── agents/
+├── tools/
+├── documents/
+└── chroma_db_storage/
+
+STEP 1 - GENERATE REQUIREMENTS FILE
+===================================
+Command:
+pip freeze > requirements.txt
+
+Verify:
+cat requirements.txt
+
+Purpose:
+Store all Python dependencies.
+
+STEP 2 - CREATE DOCKERFILE
+==========================
+File: Dockerfile
+
+Content:
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+EXPOSE 8000
+
+CMD [
+  "uvicorn",
+  "app:app",
+  "--host",
+  "0.0.0.0",
+  "--port",
+  "8000"
+]
+
+DOCKERFILE EXPLANATION
+======================
+FROM python:3.11-slim
+- Downloads Python base image.
+
+WORKDIR /app
+- Sets working directory.
+
+COPY . .
+- Copies project files.
+
+RUN pip install
+- Installs dependencies.
+
+EXPOSE 8000
+- Opens FastAPI port.
+
+CMD
+- Starts application automatically.
+
+STEP 3 - INSTALL DOCKER
+=======================
+Commands:
+sudo apt update
+sudo apt install docker.io -y
+
+Verify:
+docker --version
+
+STEP 4 - START DOCKER
+======================
+Commands:
+sudo systemctl start docker
+sudo systemctl enable docker
+
+Verify:
+sudo systemctl status docker
+
+Expected:
+running
+
+STEP 5 - BUILD IMAGE
+====================
+Command:
+docker build -t loan-ai .
+
+Explanation:
+-t = image tag
+loan-ai = image name
+. = current folder
+
+Expected:
+Successfully built
+
+STEP 6 - VERIFY IMAGE
+=====================
+Command:
+docker images
+
+Expected:
+loan-ai image visible
+
+STEP 7 - RUN CONTAINER
+======================
+Command:
+docker run -p 8000:8000 loan-ai
+
+Open:
+http://localhost:8000/docs
+
+STEP 8 - RUN IN BACKGROUND
+==========================
+Command:
+docker run -d -p 8000:8000 loan-ai
+
+-d = detached mode
+
+STEP 9 - VIEW RUNNING CONTAINERS
+================================
+Command:
+docker ps
+
+STEP 10 - VIEW LOGS
+===================
+Command:
+docker logs <container-id>
+
+DOCKER COMPOSE
+==============
+Why Docker Compose?
+- Manage multiple containers.
+- Start app, Redis, and PostgreSQL together.
+
+STEP 11 - CREATE COMPOSE FILE
+=============================
+File: docker-compose.yml
+
+Content:
+version: '3.9'
+
+services:
+
+  loan-ai:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - postgres
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: loandb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+STEP 12 - START ALL SERVICES
+============================
+Command:
+docker compose up
+
+Expected:
+FastAPI started
+Redis started
+PostgreSQL started
+
+STEP 13 - RUN IN BACKGROUND
+===========================
+Command:
+docker compose up -d
+
+STEP 14 - CHECK CONTAINERS
+==========================
+Command:
+docker ps
+
+Expected:
+loan-ai
+redis
+postgres
+
+STEP 15 - STOP EVERYTHING
+=========================
+Command:
+docker compose down
+
+FINAL ARCHITECTURE
+==================
+Browser
+  |
+  v
+FastAPI Container
+  |
+  v
+LangGraph
+  |
+  +-- Redis Container
+  +-- PostgreSQL Container
+  +-- ChromaDB
+  |
+  v
+Answer
+
+INTERVIEW ANSWER
+================
+I containerized the FastAPI and LangGraph based Loan AI Assistant using Docker. I used Docker Compose to orchestrate the application, Redis, and PostgreSQL services. This provides reproducible deployments, environment consistency, and production-ready service management.
