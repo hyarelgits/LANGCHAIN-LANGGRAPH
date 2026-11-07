@@ -1,0 +1,284 @@
+REDIS MEMORY IMPLEMENTATION GUIDE (STEP-BY-STEP)
+
+GOAL
+====
+Add persistent conversation memory to the Loan AI Assistant using Redis.
+
+CURRENT PROBLEM
+===============
+User: Show customer details
+AI: Customer Ravi has score 760
+
+User: Is he eligible?
+AI: I don't know who 'he' is.
+
+WHY?
+====
+The application forgets previous conversations.
+
+FINAL ARCHITECTURE
+==================
+User
+ |
+ v
+FastAPI
+ |
+ v
+Redis Memory
+ |
+ v
+LangGraph
+ |
+ v
+Writer Agent
+ |
+ v
+Answer
+
+==================================================
+STEP 1 - CREATE NEW FILE
+==================================================
+PATH:
+/root/my-loan-project/redis_memory.py
+
+CODE:
+import redis
+import json
+
+redis_client = redis.Redis(
+    host='localhost',
+    port=6379,
+    decode_responses=True
+)
+
+PURPOSE:
+Create Redis connection.
+
+==================================================
+STEP 2 - ADD HISTORY READER
+==================================================
+FILE:
+redis_memory.py
+
+ADD:
+
+def get_history(user):
+
+    data = redis_client.get(user)
+
+    if not data:
+        return []
+
+    return json.loads(data)
+
+PURPOSE:
+Read old conversations.
+
+==================================================
+STEP 3 - ADD HISTORY WRITER
+==================================================
+FILE:
+redis_memory.py
+
+ADD:
+
+def save_message(user, question, answer):
+
+    history = get_history(user)
+
+    history.append(
+        {
+            'question': question,
+            'answer': answer
+        }
+    )
+
+    redis_client.set(
+        user,
+        json.dumps(history)
+    )
+
+PURPOSE:
+Save new conversation.
+
+==================================================
+STEP 4 - UPDATE STATE
+==================================================
+FILE:
+/root/my-loan-project/langgraph_flow.py
+
+FIND:
+class State(TypedDict)
+
+ADD FIELD:
+chat_history: list
+
+FINAL:
+class State(TypedDict):
+    question: str
+    user_name: str
+    search_result: dict
+    db_result: dict
+    answer: str
+    chat_history: list
+
+==================================================
+STEP 5 - IMPORT MEMORY FUNCTIONS
+==================================================
+FILE:
+langgraph_flow.py
+
+ADD:
+from redis_memory import (
+    get_history,
+    save_message
+)
+
+==================================================
+STEP 6 - LOAD MEMORY BEFORE GRAPH
+==================================================
+FILE:
+langgraph_flow.py
+
+INSIDE:
+def run_loan_flow(...)
+
+ADD:
+history = get_history(user_name)
+
+==================================================
+STEP 7 - PASS MEMORY TO GRAPH
+==================================================
+FILE:
+langgraph_flow.py
+
+CHANGE:
+result = app.invoke({
+    'question': question,
+    'user_name': user_name,
+    'search_result': {},
+    'db_result': {},
+    'answer': '',
+    'chat_history': history
+})
+
+==================================================
+STEP 8 - SAVE MEMORY AFTER RESPONSE
+==================================================
+FILE:
+langgraph_flow.py
+
+ADD:
+save_message(
+    user_name,
+    question,
+    result['answer']
+)
+
+==================================================
+STEP 9 - UPDATE WRITER AGENT
+==================================================
+FILE:
+/root/my-loan-project/agents/writer_agent.py
+
+CHANGE:
+def writer_agent(
+    question,
+    search_result,
+    db_result,
+    chat_history
+)
+
+==================================================
+STEP 10 - BUILD HISTORY STRING
+==================================================
+FILE:
+writer_agent.py
+
+ADD:
+history_text = ''
+
+for item in chat_history:
+
+    history_text += (
+        f"Question: {item['question']}
+"
+    )
+
+    history_text += (
+        f"Answer: {item['answer']}
+"
+    )
+
+==================================================
+STEP 11 - ADD HISTORY TO PROMPT
+==================================================
+FILE:
+writer_agent.py
+
+ADD:
+prompt = f"""
+Conversation History:
+
+{history_text}
+
+Current Question:
+{question}
+"""
+
+==================================================
+STEP 12 - INSTALL REDIS LIBRARY
+==================================================
+COMMAND:
+pip install redis
+
+==================================================
+STEP 13 - INSTALL REDIS SERVER
+==================================================
+COMMAND:
+sudo apt update
+sudo apt install redis-server -y
+
+START:
+sudo systemctl start redis
+
+VERIFY:
+redis-cli ping
+
+EXPECTED:
+PONG
+
+==================================================
+STEP 14 - RESTART APPLICATION
+==================================================
+COMMAND:
+pkill -f uvicorn
+
+COMMAND:
+uvicorn app:app --reload
+
+==================================================
+STEP 15 - TEST MEMORY
+==================================================
+ASK:
+Show customer details
+
+THEN ASK:
+Is he eligible?
+
+EXPECTED:
+AI understands that 'he' refers to Ravi.
+
+==================================================
+REDIS DEBUG COMMANDS
+==================================================
+redis-cli
+
+KEYS *
+
+GET Hyarel
+
+==================================================
+INTERVIEW ANSWER
+==================================================
+I implemented Redis-based conversational memory by storing question-answer history outside the application process. Chat history is loaded into LangGraph state, injected into prompts, and persisted in Redis so conversations survive application restarts.
