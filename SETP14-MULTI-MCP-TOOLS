@@ -1,0 +1,93 @@
+MULTI-TOOL MCP PROJECT - IMPLEMENTATION GUIDE
+
+OBJECTIVE
+Build a multi-tool AI assistant using FastAPI + LangGraph.
+
+TARGET ARCHITECTURE
+User
+ |
+ v
+FastAPI
+ |
+ v
+LangGraph Router
+ |
+ +-- PostgreSQL Tool
+ +-- EMI Tool
+ +-- Calculator Tool
+ +-- Policy Tool
+ +-- Search Tool
+ |
+ v
+Answer
+
+STEP 1: CREATE TOOLS FOLDER
+cd ~/my-loan-project
+mkdir tools
+
+STEP 2: CREATE EMI TOOL
+File: tools/emi_tool.py
+
+def calculate_emi(principal, annual_rate, years):
+    monthly_rate = annual_rate / 12 / 100
+    months = years * 12
+    emi = (principal * monthly_rate * ((1 + monthly_rate) ** months)) / (((1 + monthly_rate) ** months) - 1)
+    return round(emi, 2)
+
+Test:
+from tools.emi_tool import calculate_emi
+print(calculate_emi(500000, 8, 5))
+
+STEP 3: CREATE CALCULATOR TOOL
+File: tools/calculator_tool.py
+
+def calculate(expression):
+    return eval(expression)
+
+STEP 4: CREATE POLICY TOOL
+File: tools/policy_tool.py
+
+def get_policy():
+    return 'Minimum CIBIL score is 720'
+
+STEP 5: CREATE ROUTER AGENT
+File: agents/router_agent.py
+
+def route_question(question):
+    q = question.lower()
+    if 'emi' in q:
+        return 'emi'
+    if 'calculate' in q:
+        return 'calculator'
+    if 'cibil' in q or 'policy' in q:
+        return 'policy'
+    if 'customer' in q:
+        return 'postgres'
+    return 'search'
+
+STEP 6: UPDATE langgraph_flow.py
+Add imports for tools and router_agent.
+
+STEP 7: CREATE ROUTER NODE
+Use route_question() to decide which tool executes.
+
+STEP 8: CREATE EMI NODE
+Call calculate_emi() and return answer.
+
+STEP 9: REGISTER NODE
+graph.add_node('emi', emi_node)
+
+STEP 10: CONDITIONAL ROUTING
+Use graph.add_conditional_edges() to send requests to proper tool.
+
+STEP 11: RESTART API
+pkill -f uvicorn
+uvicorn app:app --reload
+
+STEP 12: TEST
+Question: Calculate EMI
+Question: Show customer details
+Question: What is minimum CIBIL score?
+
+INTERVIEW ANSWER
+I implemented a multi-tool LangGraph architecture where a router node dynamically selects PostgreSQL, EMI, policy, calculator, or search tools based on user intent.
