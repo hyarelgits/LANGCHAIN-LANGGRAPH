@@ -1,0 +1,133 @@
+GITHUB ACTIONS CI/CD - COMPLETE IMPLEMENTATION GUIDE
+
+OVERVIEW
+========
+GitHub Actions automates build, test and deployment.
+
+FLOW
+====
+Code Change
+   |
+   v
+Git Push
+   |
+   v
+GitHub Repository
+   |
+   v
+GitHub Actions
+   |
+   v
+Build Docker Image
+   |
+   v
+Deploy Server
+
+STEP 1 - CREATE GITHUB REPOSITORY
+=================================
+Commands:
+git init
+git add .
+git commit -m "Initial Commit"
+
+Create repository on GitHub.
+
+Add remote:
+git remote add origin https://github.com/<user>/loan-ai-assistant.git
+
+git push -u origin main
+
+STEP 2 - CREATE WORKFLOW FOLDER
+===============================
+mkdir -p .github/workflows
+
+Expected Structure:
+.github/
+└── workflows/
+
+STEP 3 - CREATE WORKFLOW FILE
+=============================
+File Path:
+.github/workflows/deploy.yml
+
+Content:
+
+name: Loan AI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Validate Application
+        run: |
+          python -m py_compile app.py
+
+STEP 4 - COMMIT WORKFLOW
+========================
+git add .
+git commit -m "Add GitHub Actions"
+git push
+
+STEP 5 - VERIFY ACTIONS
+=======================
+Open GitHub Repository
+Click Actions Tab
+
+Expected:
+Loan AI Pipeline
+
+STEP 6 - ADD DOCKER BUILD
+=========================
+Add:
+
+- name: Build Docker Image
+  run: |
+    docker build -t loan-ai .
+
+STEP 7 - PREPARE DEPLOYMENT SERVER
+==================================
+Install Docker, Git and Docker Compose on Azure VM or AWS EC2.
+
+STEP 8 - CREATE GITHUB SECRETS
+==============================
+Create:
+SERVER_HOST
+SERVER_USER
+SERVER_SSH_KEY
+
+STEP 9 - AUTO DEPLOYMENT
+========================
+Add SSH deployment step using appleboy/ssh-action.
+
+STEP 10 - TEST CI/CD
+====================
+Make a code change and run:
+
+git add .
+git commit -m "test"
+git push
+
+Expected:
+Pipeline starts automatically.
+
+INTERVIEW ANSWER
+================
+I implemented CI/CD using GitHub Actions. Every push to the main branch validates the FastAPI application, builds a Docker image, and deploys the LangGraph-based AI assistant to a target server automatically.
