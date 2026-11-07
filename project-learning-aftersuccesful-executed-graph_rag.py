@@ -1,3 +1,25 @@
+==============
+Chapter 1 ✅ State(TypedDict)
+
+Chapter 2 → router(state)
+
+Chapter 3 → rag_node(state)
+
+Chapter 4 → mcp_node(state)
+
+Chapter 5 → direct_node(state)
+
+Chapter 6 → choose_route(state)
+
+Chapter 7 → StateGraph()
+
+Chapter 8 → builder.add_node()
+
+Chapter 9 → conditional_edges()
+
+Chapter 10 → graph.compile()
+
+===============
 GRAPH_RAG.PY - DETAILED EXPLANATION GUIDE
 
 OVERVIEW
