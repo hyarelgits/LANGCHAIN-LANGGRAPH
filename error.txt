@@ -1,0 +1,28 @@
+/root/my-loan-project/chroma_db_code/ingest.py:2: DeprecationWarning: `langchain-community` is being sunset and is no longer actively maintained. See https://github.com/langchain-ai/langchain-community/issues/674 for details and migration guidance toward standalone integration packages.
+  from langchain_community.embeddings import OllamaEmbeddings
+/root/my-loan-project/chroma_db_code/ingest.py:17: LangChainDeprecationWarning: The class `OllamaEmbeddings` was deprecated in LangChain 0.3.1 and will be removed in 1.0.0. An updated version of the class exists in the `langchain-ollama package and should be used instead. To use it run `pip install -U `langchain-ollama` and import as `from `langchain_ollama import OllamaEmbeddings``.
+  embeddings = OllamaEmbeddings(model="llama3.2:1b")
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/root/my-loan-project/chroma_db_code/ingest.py", line 22, in <module>
+    main()
+  File "/root/my-loan-project/chroma_db_code/ingest.py", line 18, in main
+    Chroma.from_documents(chunks, embeddings, persist_directory=DB_DIR)
+  File "/root/student_portal/venv/lib/python3.10/site-packages/langchain_community/vectorstores/chroma.py", line 887, in from_documents
+    return cls.from_texts(
+  File "/root/student_portal/venv/lib/python3.10/site-packages/langchain_community/vectorstores/chroma.py", line 843, in from_texts
+    chroma_collection.add_texts(
+  File "/root/student_portal/venv/lib/python3.10/site-packages/langchain_community/vectorstores/chroma.py", line 277, in add_texts
+    embeddings = self._embedding_function.embed_documents(texts)
+  File "/root/student_portal/venv/lib/python3.10/site-packages/langchain_community/embeddings/ollama.py", line 214, in embed_documents
+    embeddings = self._embed(instruction_pairs)
+  File "/root/student_portal/venv/lib/python3.10/site-packages/langchain_community/embeddings/ollama.py", line 202, in _embed
+    return [self._process_emb_response(prompt) for prompt in iter_]
+  File "/root/student_portal/venv/lib/python3.10/site-packages/langchain_community/embeddings/ollama.py", line 202, in <listcomp>
+    return [self._process_emb_response(prompt) for prompt in iter_]
+  File "/root/student_portal/venv/lib/python3.10/site-packages/langchain_community/embeddings/ollama.py", line 176, in _process_emb_response
+    raise ValueError(
+ValueError: Error raised by inference API HTTP code: 500, {"error":"This server does not support embeddings. Start it with `--embeddings`"}

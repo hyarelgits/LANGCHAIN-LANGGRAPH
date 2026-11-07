@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+langchain
+langchain-community
+langgraph
+chromadb
+ollama
+psycopg2-binary
+pydantic
+python-dotenv
+pytest

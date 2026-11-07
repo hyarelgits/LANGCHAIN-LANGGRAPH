@@ -1,0 +1,13 @@
+INFO:     Will watch for changes in these directories: ['/root/my-loan-project']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [220036] using WatchFiles
+/root/my-loan-project/chroma_db_code/graph_rag.py:19: LangChainDeprecationWarning: The class `Chroma` was deprecated in LangChain 0.2.9 and will be removed in 1.0. An updated version of the class exists in the `langchain-chroma package and should be used instead. To use it run `pip install -U `langchain-chroma` and import as `from `langchain_chroma import Chroma``.
+  db = Chroma(
+INFO:     Started server process [220039]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [220039]
+INFO:     Stopping reloader process [220036]

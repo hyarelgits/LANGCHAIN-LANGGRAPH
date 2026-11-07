@@ -1,0 +1,12 @@
+CIBIL SCORE RULE
+
+Normal eligibility rule:
+A user needs a CIBIL score of 720 or more
+for a standard personal loan.
+
+If CIBIL score is less than 720,
+the first condition is FAIL.
+
+Example:
+CIBIL score 680 is less than 720.
+So the first check is FAIL.

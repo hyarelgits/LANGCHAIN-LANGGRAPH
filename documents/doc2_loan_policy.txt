@@ -1,0 +1,16 @@
+LOAN POLICY - EXCEPTION RULE
+
+Exception rule:
+If CIBIL score is only about 30 points less
+than the required score (for example 680 to 690),
+AND the user has 1 year bank statement,
+then the bank can offer the loan with conditions.
+
+If the user does NOT have 1 year bank statement,
+then the result is Not Eligible.
+
+Final answer must explain:
+1. First condition result
+2. Exception rule
+3. Bank statement check
+4. Final decision
