@@ -1,0 +1,195 @@
+# Import FastAPI framework
+
+# FastAPI is used to build REST APIs
+
+# It automatically generates Swagger documentation
+
+# It handles incoming HTTP requests
+
+from fastapi import FastAPI
+
+
+# Import CORS middleware
+
+# CORS allows frontend applications
+# (React, Angular, HTML, JavaScript)
+
+# to call this API from another domain
+
+from fastapi.middleware.cors import CORSMiddleware
+
+
+# Import compiled LangGraph workflow
+
+# graph contains Router, RAG Node,
+# MCP Node and Direct Node
+
+# app.py will invoke this graph whenever
+# a user asks a question
+
+from chroma_db_code.graph_rag import graph
+
+
+# Create FastAPI application object
+
+# title appears in Swagger UI
+
+# description explains the project
+
+# version helps track API releases
+
+app = FastAPI(
+    title="Loan Policy AI Assistant",
+    description="RAG + LangGraph + Ollama + ChromaDB",
+    version="1.0"
+)
+
+
+# ---------------------------------------------------
+# CORS CONFIGURATION
+# ---------------------------------------------------
+
+# Add middleware into FastAPI
+
+# Middleware executes before requests reach endpoint
+
+# CORS allows browser applications to call API
+
+# "*" means requests allowed from any domain
+
+app.add_middleware(
+    CORSMiddleware,
+
+    # Allow requests from all origins
+
+    allow_origins=["*"],
+
+    # Allow cookies and credentials
+
+    allow_credentials=True,
+
+    # Allow all HTTP methods
+
+    allow_methods=["*"],
+
+    # Allow all request headers
+
+    allow_headers=["*"],
+)
+
+
+# ---------------------------------------------------
+# HOME ENDPOINT
+# ---------------------------------------------------
+
+# Create GET endpoint
+
+# URL:
+# http://localhost:8000/
+
+# Used to verify application startup
+
+@app.get("/")
+def home():
+
+    # Return JSON response
+
+    # Shows project information
+
+    return {
+        "message": "Loan Policy AI Assistant Running",
+
+        "technology": [
+            "FastAPI",
+            "LangGraph",
+            "LangChain",
+            "ChromaDB",
+            "Ollama"
+        ]
+    }
+
+
+# ---------------------------------------------------
+# HEALTH ENDPOINT
+# ---------------------------------------------------
+
+# Monitoring endpoint
+
+# Used by load balancers
+
+# Used by monitoring systems
+
+# Used to check service health
+
+@app.get("/health")
+def health():
+
+    # Return status
+
+    # If endpoint responds,
+    # service is running
+
+    return {
+        "status": "UP"
+    }
+
+
+# ---------------------------------------------------
+# MAIN AI ENDPOINT
+# ---------------------------------------------------
+
+# Main business endpoint
+
+# Receives user question
+
+# Example:
+#
+# /ask?question=What is minimum CIBIL score?
+
+@app.get("/ask")
+def ask(question: str):
+
+
+    # Create LangGraph State
+
+    # State created:
+    #
+    # {
+    #   "question": question
+    # }
+
+    # Execution enters LangGraph
+
+    result = graph.invoke(
+        {
+            "question": question
+        }
+    )
+
+
+    # Depending on question,
+    # Router may select:
+    #
+    # RAG
+    # MCP
+    # Direct
+
+    # Example Result:
+    #
+    # {
+    #   "question": "...",
+    #   "route": "...",
+    #   "answer": "..."
+    # }
+
+
+    # Return final JSON response
+
+    # Return original question
+
+    # Return generated answer
+
+    return {
+        "question": question,
+        "answer": result.get("answer", "")
+    }
