@@ -1,0 +1,202 @@
+LANGGRAPH_FLOW.PY - COMPLETE EXPLANATION GUIDE
+
+FILE PURPOSE
+============
+This file is the workflow engine of the Loan AI Assistant.
+
+It uses LangGraph to control how a user question moves through different processing steps.
+
+FLOW OVERVIEW
+=============
+User Question
+      |
+      v
+Search Node
+      |
+      v
+Route Decision
+   +--+----+
+   |       |
+   v       v
+ DB Node  Writer Node
+   |       ^
+   +-------+
+      |
+      v
+    END
+
+IMPORTS
+=======
+from typing import TypedDict
+- Imports TypedDict.
+- Used to build a structured State object.
+- Defines which fields move between nodes.
+
+from langgraph.graph import StateGraph, END
+- Imports LangGraph workflow engine.
+- StateGraph creates graph workflow.
+- END marks workflow completion.
+
+from agents.search_agent import search_agent
+- Imports loan policy search component.
+- Used to search business rules.
+
+from agents.db_agent import db_agent
+- Imports database agent.
+- Used to retrieve customer information.
+
+from agents.writer_agent import writer_agent
+- Creates final answer.
+- Combines search results and database data.
+
+STATE OBJECT
+============
+class State(TypedDict):
+
+question: str
+- Stores user question.
+
+user_name: str
+- Stores customer/user name.
+
+search_result: dict
+- Stores search output.
+
+db_result: dict
+- Stores database output.
+
+answer: str
+- Stores final generated answer.
+
+SEARCH NODE
+===========
+def search_node(state: State):
+
+Purpose:
+- First node executed.
+- Calls search_agent.
+- Searches loan rules.
+
+Input:
+- question
+
+Output:
+- search_result
+
+DB NODE
+=======
+def db_node(state: State):
+
+Purpose:
+- Retrieves customer information.
+- Calls db_agent.
+
+Input:
+- user_name
+
+Output:
+- db_result
+
+WRITER NODE
+===========
+def writer_node(state: State):
+
+Purpose:
+- Creates final answer.
+
+Inputs:
+- question
+- search_result
+- db_result
+
+Output:
+- answer
+
+ROUTING FUNCTION
+================
+def route_after_search(state: State):
+
+Purpose:
+- Decide next node.
+
+If search_result['found'] is True:
+-> Go to DB node
+
+Else:
+-> Go directly to Writer node
+
+GRAPH CREATION
+==============
+graph = StateGraph(State)
+
+Creates workflow object.
+
+NODE REGISTRATION
+=================
+graph.add_node('search', search_node)
+graph.add_node('db', db_node)
+graph.add_node('writer', writer_node)
+
+Registers all graph nodes.
+
+ENTRY POINT
+===========
+graph.set_entry_point('search')
+
+Workflow always starts with Search node.
+
+CONDITIONAL ROUTING
+===================
+graph.add_conditional_edges(...)
+
+Allows dynamic routing.
+
+Search -> DB
+or
+Search -> Writer
+
+NORMAL EDGE
+===========
+graph.add_edge('db', 'writer')
+
+After DB execution,
+workflow continues to Writer.
+
+END EDGE
+========
+graph.add_edge('writer', END)
+
+Workflow terminates after Writer node.
+
+COMPILE
+=======
+app = graph.compile()
+
+Converts graph definition into executable workflow.
+
+RUN_LOAN_FLOW
+=============
+def run_loan_flow(question, user_name)
+
+Purpose:
+- Entry point used by app.py.
+- Executes entire graph.
+
+Creates initial state:
+{
+ question,
+ user_name,
+ search_result={},
+ db_result={},
+ answer=''
+}
+
+Calls:
+app.invoke(state)
+
+Returns:
+Final answer.
+
+INTERVIEW ANSWER
+================
+This file implements a LangGraph workflow using Search, Database and Writer nodes. It defines a shared State object, performs conditional routing based on search results, retrieves business and customer information, generates a final answer, and exposes run_loan_flow() as the entry point used by FastAPI.
